@@ -32,7 +32,7 @@ class EnvironmentProbeTests(unittest.TestCase):
         self.assertEqual(extract_version("plasmashell 6.7.4\n"), "6.7.4")
         self.assertIsNone(extract_version("plasmashell unknown"))
 
-    def test_probe_collects_capabilities_without_enabling_apply(self) -> None:
+    def test_probe_enables_color_apply_only_when_capabilities_are_present(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             (root / "etc").mkdir()
@@ -101,7 +101,7 @@ class EnvironmentProbeTests(unittest.TestCase):
         self.assertTrue(capabilities.mixed_scale)
         self.assertIn("colorscheme", capabilities.plasma_apply)
         self.assertIn("screenshot", capabilities.portals)
-        self.assertFalse(capabilities.apply_supported)
+        self.assertTrue(capabilities.apply_supported)
         self.assertEqual(len(report.settings), 9)
 
     def test_non_linux_probe_is_explicitly_read_only(self) -> None:

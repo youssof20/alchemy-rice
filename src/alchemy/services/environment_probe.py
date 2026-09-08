@@ -101,8 +101,15 @@ class EnvironmentProbe:
             monitors=monitors,
             mixed_scale=mixed_scale,
             immutable_host=immutable_host,
-            # Phase 0 is intentionally read-only on every platform.
-            apply_supported=False,
+            apply_supported=_color_apply_supported(
+                host_os=self._host_os,
+                plasma_version=plasma_version,
+                session=session,
+                desktop=desktop,
+                plasma_apply=plasma_apply,
+                kreadconfig_available=kreadconfig is not None,
+                plasma_manager_active=bool(plasma_manager.active),
+            ),
         )
         return EnvironmentReport(capabilities, settings, tuple(warnings))
 
@@ -265,3 +272,27 @@ def _normalized(value: str | None) -> str | None:
 
 def _first_nonempty(*values: str | None) -> str | None:
     return next((value.strip() for value in values if value and value.strip()), None)
+
+
+def _color_apply_supported(
+    *,
+    host_os: str,
+    plasma_version: str | None,
+    session: str | None,
+    desktop: str | None,
+    plasma_apply: tuple[str, ...],
+    kreadconfig_available: bool,
+    plasma_manager_active: bool,
+) -> bool:
+    if (
+        host_os != "linux"
+        or plasma_version is None
+        or session not in {"wayland", "x11"}
+        or desktop is None
+        or "kde" not in desktop.lower()
+        or plasma_manager_active
+    ):
+        return False
+    parts = tuple(int(part) for part in plasma_version.split("."))
+    supported_version = (6, 6) <= parts[:2] <= (6, 8)
+    return supported_version and "colorscheme" in plasma_apply and kreadconfig_available

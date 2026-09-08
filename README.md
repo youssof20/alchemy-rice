@@ -1,8 +1,8 @@
 # Alchemy
 
-Alchemy is a free, GPL-licensed KDE Plasma 6 ricing workbench under active development. The current Phase 0 build is a **read-only inspector**: it detects the desktop environment and reads a small reviewed set of KDE appearance settings. It cannot apply or revert a rice yet.
+Alchemy is a free, GPL-licensed KDE Plasma 6 ricing workbench under active development. The current Phase 1 build detects the desktop environment, reads a small reviewed set of KDE appearance settings, and provides a transactional CLI path for one color-scheme change.
 
-The target workflow is inspect, preview, plan, snapshot, apply, verify, and revert. Apply will remain disabled until the snapshot, durable journal, single-writer lock, verification, and recovery path are implemented and tested.
+Color-scheme apply creates a targeted snapshot, opens a durable journal, acquires the shared mutation lock, applies through KDE's color-scheme tool, verifies the observed setting, and restores the previous scheme if verification fails. Other settings remain read-only.
 
 Target support is Plasma 6.6 and newer, with Wayland as the primary session. Development can happen on Windows, but real KDE integration requires a Linux Plasma session.
 
@@ -15,7 +15,10 @@ A future `.rice` file will be declarative JSON. Alchemy will not execute code co
 - Reviewed KConfig readers for colors, icons, cursor, fonts, application style, and window decoration.
 - Text, JSON, and redacted debug output.
 - A read-only Qt capability view.
-- Unit tests that run without KDE or Qt.
+- Targeted file snapshots that preserve missing files and symlinks without dereferencing them.
+- Durable transaction journals and a cross-process mutation lock.
+- Color-scheme plan, apply, verify, revert, and interrupted-transaction recovery commands.
+- Unit tests that run without a KDE session.
 
 The inspector reports unknown values instead of inferring KDE support from a version number. Union detection is deliberately unknown until a stable capability probe is available.
 
@@ -32,6 +35,10 @@ alchemy inspect
 alchemy inspect --json
 alchemy debug-info
 alchemy gui
+alchemy plan-color BreezeDark
+alchemy apply-color BreezeDark --yes
+alchemy revert --last
+alchemy recovery --list
 ```
 
 Run the test suite with:
@@ -44,9 +51,9 @@ The repository does not yet provide a distro package or portable release. See [P
 
 ## Safety boundary
 
-Phase 0 contains no setting writers and always reports Apply as disabled. External commands are reviewed, read-only commands invoked as argument vectors without a shell. Debug output is generated locally and redacted before display; Alchemy does not upload it.
+Only the color-scheme driver can write settings. It is unavailable unless the host is Linux, Plasma reports a version in the current 6.6-6.8 target window, and the required KDE read/apply tools exist. External commands are invoked as argument vectors without a shell. Debug output is generated locally and redacted before display; Alchemy does not upload it.
 
-The transaction and rollback behavior described in the project direction is not implemented yet. Current limitations and tested targets are recorded in [COMPATIBILITY.md](COMPATIBILITY.md).
+The transaction foundation has unit coverage but has not yet been validated in a real Plasma VM. Current limitations and test evidence are recorded in [COMPATIBILITY.md](COMPATIBILITY.md).
 
 ## Project documents
 

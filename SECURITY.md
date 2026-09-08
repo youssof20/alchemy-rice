@@ -4,7 +4,7 @@ Alchemy modifies desktop configuration, so a setting writer is security-sensitiv
 
 ## Current state
 
-The Phase 0 build is read-only. It invokes reviewed inspection commands as argument vectors without a shell. Apply is disabled on every platform.
+The Phase 1 build permits one color-scheme mutation when conservative capability checks pass. It snapshots the affected user file, persists the journal state before mutation, serializes mutations through a shared lock, applies through a reviewed KDE utility, verifies the observed state, and rolls back on failure. Other components remain read-only.
 
 ## Invariants
 
