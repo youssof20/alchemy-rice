@@ -43,7 +43,7 @@ def run_gui() -> int:
     root_layout = QVBoxLayout(root)
     title = QLabel("ALCHEMY / SYSTEM INSPECTOR")
     title.setObjectName("title")
-    subtitle = QLabel("Phase 1 · Inspector with transactional color-scheme apply")
+    subtitle = QLabel("Phase 2 · Inspector with transactional core-setting CLI")
     subtitle.setObjectName("muted")
     root_layout.addWidget(title)
     root_layout.addWidget(subtitle)
@@ -57,8 +57,11 @@ def run_gui() -> int:
             "Icons",
             "Cursor",
             "Fonts",
+            "Plasma theme",
+            "Wallpaper",
             "Application style",
             "Window decoration",
+            "KWin",
         ]
     )
     components.setCurrentRow(0)
@@ -89,7 +92,7 @@ def run_gui() -> int:
 
     controls = QHBoxLayout()
     if payload["capabilities"]["apply_supported"]:
-        status_text = "Color-scheme Apply is available through the reviewed CLI workflow."
+        status_text = "Reviewed setting writers are available through the CLI."
     else:
         status_text = "Apply is disabled: this environment did not pass capability checks."
     status = QLabel(status_text)

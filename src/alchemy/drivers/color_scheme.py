@@ -7,6 +7,7 @@ from pathlib import Path
 
 from alchemy.domain.transactions import Operation, VerificationResult
 from alchemy.platform.commands import Runner
+from alchemy.platform.kde_notifications import Notifier, RefreshAction
 
 _THEME_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_. -]{0,127}$")
 
@@ -21,11 +22,14 @@ class ColorSchemeDriver:
         kreadconfig: str,
         apply_tool: str,
         kdeglobals: Path,
+        notifier: Notifier,
     ) -> None:
         self.runner = runner
         self.kreadconfig = kreadconfig
         self.apply_tool = apply_tool
         self.kdeglobals = kdeglobals
+        self.config_path = kdeglobals
+        self.notifier = notifier
 
     async def read(self) -> str | None:
         result = await asyncio.to_thread(
@@ -75,9 +79,7 @@ class ColorSchemeDriver:
         wanted = operation.after if expected is None else expected
         matched = observed == wanted
         detail = (
-            "Color scheme matches the planned value"
-            if matched
-            else "Observed color scheme differs"
+            "Color scheme matches the planned value" if matched else "Observed color scheme differs"
         )
         return VerificationResult(matched, observed, detail)
 
@@ -89,3 +91,6 @@ class ColorSchemeDriver:
         )
         if result.returncode != 0:
             raise RuntimeError(result.stderr.strip() or "Color-scheme rollback failed")
+
+    async def refresh_after_snapshot(self) -> None:
+        await asyncio.to_thread(self.notifier.refresh, RefreshAction.PALETTE)

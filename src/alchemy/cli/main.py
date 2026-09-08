@@ -13,7 +13,7 @@ from alchemy.services.transaction_service import TransactionFailedError, Transac
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="alchemy", description="Inspect KDE Plasma state without changing it."
+        prog="alchemy", description="Inspect and transactionally change reviewed KDE settings."
     )
     subcommands = parser.add_subparsers(dest="command")
 
@@ -29,6 +29,20 @@ def build_parser() -> argparse.ArgumentParser:
     apply_parser.add_argument("scheme", help="Installed KDE color-scheme name")
     apply_parser.add_argument(
         "--yes", action="store_true", help="Confirm the exact operation shown by plan-color"
+    )
+    subcommands.add_parser("list-settings", help="List transactional setting drivers")
+    setting_plan = subcommands.add_parser(
+        "plan-setting", help="Plan one reviewed Plasma setting change"
+    )
+    setting_plan.add_argument("setting", help="Setting name from list-settings")
+    setting_plan.add_argument("value", help="Desired setting value")
+    setting_apply = subcommands.add_parser(
+        "apply-setting", help="Apply one reviewed Plasma setting change"
+    )
+    setting_apply.add_argument("setting", help="Setting name from list-settings")
+    setting_apply.add_argument("value", help="Desired setting value")
+    setting_apply.add_argument(
+        "--yes", action="store_true", help="Confirm the exact operation shown by plan-setting"
     )
     revert_parser = subcommands.add_parser("revert", help="Revert a committed transaction")
     revert_parser.add_argument("--last", action="store_true", help="Revert the latest commit")
@@ -46,10 +60,18 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         return run_gui()
 
-    if command in {"plan-color", "apply-color", "revert", "recovery"}:
+    if command in {
+        "plan-color",
+        "apply-color",
+        "list-settings",
+        "plan-setting",
+        "apply-setting",
+        "revert",
+        "recovery",
+    }:
         try:
             return _run_transaction_command(command, arguments)
-        except (TransactionFailedError, ValueError, OSError) as exc:
+        except (RuntimeError, ValueError, OSError) as exc:
             print(f"Alchemy: {exc}", file=sys.stderr)
             return 1
 
@@ -76,6 +98,19 @@ def _run_transaction_command(command: str, arguments: argparse.Namespace) -> int
         record = asyncio.run(service.apply_color_scheme(arguments.scheme))
         print(json.dumps(record or {"state": "no_change"}, indent=2, sort_keys=True))
         return 0
+    if command == "list-settings":
+        print("\n".join(service.setting_names()))
+        return 0
+    if command == "plan-setting":
+        operations = asyncio.run(service.plan_component(arguments.setting, arguments.value))
+        print(json.dumps([operation.to_dict() for operation in operations], indent=2))
+        return 0
+    if command == "apply-setting":
+        if not arguments.yes:
+            raise TransactionFailedError("Apply requires --yes after reviewing plan-setting output")
+        record = asyncio.run(service.apply_component(arguments.setting, arguments.value))
+        print(json.dumps(record or {"state": "no_change"}, indent=2, sort_keys=True))
+        return 0
     if command == "revert":
         if not arguments.last:
             raise TransactionFailedError("Specify --last")
@@ -94,7 +129,7 @@ def _print_report(report: dict[str, object]) -> None:
     capabilities = report["capabilities"]
     assert isinstance(capabilities, dict)
     print("Alchemy read-only inspector")
-    print("Apply: color scheme only when capability checks pass")
+    print("Apply: reviewed Phase 2 settings when capability checks pass")
     print()
     for key, value in capabilities.items():
         print(f"{key.replace('_', ' ').title():22} {_display(value)}")

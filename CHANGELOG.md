@@ -4,6 +4,15 @@ All notable project changes will be recorded here. The project has not made a pu
 
 ## Unreleased
 
+### Phase 2 — core Plasma drivers
+
+- Added a registry of transactional drivers for icons, cursors, fonts, Plasma theme, application style, window decoration, and selected KWin settings.
+- Added KDE session-bus refresh adapters for palette, font, style, icon, cursor, and KWin configuration changes.
+- Added a wallpaper driver using Plasma's scripting query and official apply utility, with exact uniform-layout rollback and conservative multi-desktop refusal.
+- Generalized snapshot, journal, verification, rollback, revert, and recovery handling across setting drivers.
+- Added generic setting discovery, plan, and confirmed apply commands.
+- Added fake-boundary tests for KConfig commands, refresh actions, validation, wallpaper safety, and cross-driver transactions.
+
 ### Phase 1 — transaction foundation
 
 - Added targeted snapshot capture and restore with hashes and symlink metadata.

@@ -4,7 +4,9 @@ Alchemy modifies desktop configuration, so a setting writer is security-sensitiv
 
 ## Current state
 
-The Phase 1 build permits one color-scheme mutation when conservative capability checks pass. It snapshots the affected user file, persists the journal state before mutation, serializes mutations through a shared lock, applies through a reviewed KDE utility, verifies the observed state, and rolls back on failure. Other components remain read-only.
+The Phase 2 build permits a reviewed set of core Plasma mutations when conservative capability checks pass. It acquires the shared lock before observing mutable state, snapshots the affected user file, persists the journal state before mutation, applies through a setting-specific KDE interface, verifies the observed state, and rolls back on failure.
+
+KConfig values reject control characters and enumerated values are allowlisted where upstream defines a closed set. Commands use argument vectors without a shell. Wallpaper paths must resolve to local regular files; wallpaper apply refuses layouts whose per-desktop state cannot be exactly reconstructed by the official KDE utility.
 
 ## Invariants
 
