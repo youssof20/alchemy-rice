@@ -4,9 +4,15 @@ Alchemy modifies desktop configuration, so a setting writer is security-sensitiv
 
 ## Current state
 
-The Phase 8 build permits a reviewed set of core Plasma mutations and semantic panel layouts when conservative capability checks pass. It acquires the shared lock before observing mutable state, snapshots the affected user file, persists the journal state before mutation, applies through a setting-specific KDE interface, verifies the observed state, and rolls back on failure. Rice import, creator capture, gallery browsing, and repository import remain non-applying operations. Dependency installation is a separate explicit operation.
+The Phase 9 build permits a reviewed set of core Plasma mutations, semantic panel layouts, and narrowly owned application visual files when conservative capability checks pass. It acquires the shared lock before observing mutable state, snapshots the affected user file, persists the journal state before mutation, applies through a setting-specific interface, verifies the observed state, and rolls back on failure. Rice import, creator capture, gallery browsing, and repository import remain non-applying operations. Dependency installation is a separate explicit operation.
 
 KConfig values reject control characters and enumerated values are allowlisted where upstream defines a closed set. Commands use argument vectors without a shell. Wallpaper paths must resolve to local regular files; wallpaper apply refuses layouts whose per-desktop state cannot be exactly reconstructed by the official KDE utility.
+
+Application adapters write only one exact path under the user's XDG configuration or data root.
+They refuse symlinked paths, unknown existing keys, include directives, command-capable Starship
+modules, path-based fastfetch logos, identity-revealing fastfetch modules, and behavioral terminal
+configuration. An app is never started or reloaded by Alchemy. The application executable must
+already be present, and dependencies remain a separate reviewed workflow.
 
 Panel JSON has strict fields, size/count bounds, identifier validation, and no command or widget-configuration field. Generated scripts embed only canonical JSON data. All requested and generated widgets are checked against Plasma's installed widget types before apply and again inside the apply script. Third-party plasmoids are treated as executable external dependencies and are never embedded or silently replaced.
 

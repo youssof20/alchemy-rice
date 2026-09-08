@@ -9,6 +9,7 @@ from typing import Any, Protocol
 
 from alchemy.domain.capabilities import EnvironmentReport
 from alchemy.domain.transactions import Operation, TransactionState, VerificationResult
+from alchemy.drivers.apps import AppConfigDriver, AppDriverRegistry
 from alchemy.drivers.color_scheme import ColorSchemeDriver
 from alchemy.drivers.panels import PanelDriver
 from alchemy.drivers.registry import DriverRegistry
@@ -72,12 +73,54 @@ class TransactionService:
             notifier=self.notifier,
             plasma_shell=plasma_shell,
         )
+        self.app_registry = AppDriverRegistry(
+            home=self.home,
+            config_root=self.config_root,
+            xdg_data_root=_xdg_data_root(self.home),
+            which=self.which,
+        )
         self.journals = JournalStore(self.state_root / "transactions")
         self.snapshots = SnapshotStore(self.data_root / "snapshots", home=self.home)
         self.lock_path = self.state_root / "apply.lock"
 
     def setting_names(self) -> tuple[str, ...]:
         return self.registry.names()
+
+    def app_names(self) -> tuple[str, ...]:
+        return self.app_registry.names()
+
+    def inspect_app(self, app: str) -> dict[str, Any]:
+        try:
+            return self.app_registry.create(app, require_installed=False).inspect()
+        except (RuntimeError, ValueError) as exc:
+            raise TransactionFailedError(str(exc)) from exc
+
+    async def plan_app(self, app: str, settings_path: str) -> dict[str, Any]:
+        report = self.probe.inspect()
+        self._require_mutation_environment(report)
+        driver = self._app_driver(app)
+        operations = await driver.plan(settings_path)
+        if not operations:
+            return {"state": "no_change", **driver.inspect()}
+        operation = operations[0]
+        return {
+            "state": "planned",
+            "operation": operation.to_dict(),
+            "plan_token": AppConfigDriver.confirmation_token(operation),
+            "note": "Only the complete adapter-owned file will be replaced",
+        }
+
+    async def apply_app(
+        self, app: str, settings_path: str, confirmation_token: str
+    ) -> dict[str, Any] | None:
+        report = self.probe.inspect()
+        self._require_mutation_environment(report)
+        return await self._apply_driver(
+            self._app_driver(app),
+            settings_path,
+            report,
+            confirmation_token=confirmation_token,
+        )
 
     async def plan_color_scheme(self, desired: str) -> tuple[Operation, ...]:
         report = self.probe.inspect()
@@ -135,13 +178,25 @@ class TransactionService:
             if not operations:
                 return None
             operation = operations[0]
-            if confirmation_token is not None and (
-                driver.name != PanelDriver.name
-                or PanelDriver.confirmation_token(operation) != confirmation_token
-            ):
-                raise TransactionFailedError(
-                    "Panel state or screen mapping changed after preview; run plan-panels again"
-                )
+            if confirmation_token is not None:
+                if driver.name == PanelDriver.name:
+                    expected_token = PanelDriver.confirmation_token(operation)
+                    drift_message = (
+                        "Panel state or screen mapping changed after preview; "
+                        "run plan-panels again"
+                    )
+                elif isinstance(driver, AppConfigDriver):
+                    expected_token = AppConfigDriver.confirmation_token(operation)
+                    drift_message = (
+                        "Application config or requested settings changed after preview; "
+                        "run plan-app again"
+                    )
+                else:
+                    raise TransactionFailedError(
+                        "This operation does not support confirmation tokens"
+                    )
+                if expected_token != confirmation_token:
+                    raise TransactionFailedError(drift_message)
             snapshot = self.snapshots.create(
                 (driver.config_path,),
                 driver=driver.name,
@@ -258,7 +313,7 @@ class TransactionService:
     async def _restore_operation(
         self, driver: TransactionalDriver, operation: Operation, snapshot_id: str
     ) -> None:
-        if operation.before is None:
+        if operation.before is None or isinstance(driver, AppConfigDriver):
             await asyncio.to_thread(self.snapshots.restore, snapshot_id)
             await driver.refresh_after_snapshot()
             return
@@ -269,11 +324,24 @@ class TransactionService:
             return self._color_driver(True)
         if name == PanelDriver.name:
             return self.registry.create_panel()
+        if name.startswith("app."):
+            try:
+                return self.app_registry.create(
+                    name.removeprefix("app."), require_installed=False
+                )
+            except (RuntimeError, ValueError) as exc:
+                raise TransactionFailedError(str(exc)) from exc
         return self._registry_driver(name)
 
     def _registry_driver(self, name: str) -> TransactionalDriver:
         try:
             return self.registry.create(name)
+        except (RuntimeError, ValueError) as exc:
+            raise TransactionFailedError(str(exc)) from exc
+
+    def _app_driver(self, app: str) -> AppConfigDriver:
+        try:
+            return self.app_registry.create(app)
         except (RuntimeError, ValueError) as exc:
             raise TransactionFailedError(str(exc)) from exc
 
@@ -320,4 +388,14 @@ def _xdg_config_root(home: Path) -> Path:
     path = Path(configured)
     if not path.is_absolute():
         raise ValueError("XDG_CONFIG_HOME must be an absolute path")
+    return path
+
+
+def _xdg_data_root(home: Path) -> Path:
+    configured = os.environ.get("XDG_DATA_HOME", "").strip()
+    if not configured:
+        return home / ".local" / "share"
+    path = Path(configured)
+    if not path.is_absolute():
+        raise ValueError("XDG_DATA_HOME must be an absolute path")
     return path

@@ -25,10 +25,10 @@ The current reviewed mappings cover these KDE files and fields:
 - `kwinrc`: window decoration plus selected placement and maximized-border behavior;
 - KDE `.colors` files: the declared scheme name.
 
-Kvantum configuration, Konsole profiles and schemes, Kitty, Alacritty, Ghostty, Starship, and
-fastfetch files are recognized and reported, but Phase 8 does not copy their content into a rice.
-They need reviewed application adapters. Wallpapers are references only until their immutable
-source, hash, and redistribution license are supplied. Plain `packages`, `packages.txt`,
+Reviewed visual subsets from Konsole profiles, Kitty, Starship, and fastfetch are mapped into
+`components.apps`. Behavioral and unsupported fields remain report findings. Kvantum, Konsole color
+scheme assets, Alacritty, and Ghostty remain recognized references pending further adapters.
+Wallpapers are references only until their immutable source, hash, and redistribution license are supplied. Plain `packages`, `packages.txt`,
 `pkglist.txt`, and `dependencies.txt` files produce untrusted dependency candidates for later
 review; they never produce installation commands.
 

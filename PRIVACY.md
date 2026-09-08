@@ -8,6 +8,12 @@ Imported rice manifests and optional overrides are stored locally by canonical S
 
 Creator capture reads only the reviewed visual settings and the panel driver's public semantic result. It does not capture arbitrary dotfiles, recent files, application state, or widget configuration. Draft and export commands are local-only and do not take screenshots, query Wi-Fi networks, contact repositories, or upload output. If a caller explicitly supplies known Wi-Fi names to the sanitizer, matching strings are blocked.
 
+Application inspection reads only the exact owned Konsole, Kitty, Starship, or fastfetch file and
+returns only its reviewed visual projection. Mixed or unknown configuration is refused rather than
+reported. The fastfetch subset excludes title, host, local-IP, custom, and object modules; logo
+sources cannot be paths. App planning, apply, verification, and rollback are local and do not start
+the application or contact a service.
+
 Dependency resolution reads the rice, local environment facts, bundled compatibility data, and the local package database. It does not search remote package indexes. A confirmed install invokes the selected host package manager and may therefore use repositories configured by the user. Alchemy stores a local receipt containing the rice hash, dependency and package identifiers, installed version, provider, trust tier, and timestamp. It does not upload this information.
 
 `alchemy gallery-refresh` is an explicit network action that fetches one static index and stores its ETag, fetch time, and hash locally. Gallery list, detail, search, sorting, and the Qt browser use only that cache and make no per-card API requests. `gallery-report` prints the complete local report and a prefilled GitHub URL; it does not open the browser or upload the report.

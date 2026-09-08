@@ -228,7 +228,144 @@
             }
           }
         },
-        "apps": {"type": "object", "maxProperties": 0}
+        "apps": {"$ref": "#/$defs/apps"}
+      }
+    },
+    "apps": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "konsole": {"$ref": "#/$defs/konsoleSettings"},
+        "kitty": {"$ref": "#/$defs/kittySettings"},
+        "starship": {"$ref": "#/$defs/starshipSettings"},
+        "fastfetch": {"$ref": "#/$defs/fastfetchSettings"}
+      }
+    },
+    "adapterVersion": {"const": 1},
+    "rgbColor": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$"
+    },
+    "appName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_. +()-]{0,127}$"
+    },
+    "konsoleSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format_version"],
+      "minProperties": 2,
+      "properties": {
+        "format_version": {"$ref": "#/$defs/adapterVersion"},
+        "color_scheme": {"$ref": "#/$defs/appName"},
+        "font_family": {"$ref": "#/$defs/appName"},
+        "font_size": {"type": "number", "minimum": 4, "maximum": 96},
+        "bold_intense": {"type": "boolean"},
+        "line_spacing": {"type": "integer", "minimum": 0, "maximum": 10},
+        "cursor_shape": {"enum": ["block", "underline", "ibeam"]}
+      },
+      "dependentRequired": {
+        "font_family": ["font_size"],
+        "font_size": ["font_family"]
+      }
+    },
+    "kittySettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format_version"],
+      "minProperties": 2,
+      "properties": {
+        "format_version": {"$ref": "#/$defs/adapterVersion"},
+        "font_family": {"$ref": "#/$defs/appName"},
+        "font_size": {"type": "number", "minimum": 4, "maximum": 96},
+        "foreground": {"$ref": "#/$defs/rgbColor"},
+        "background": {"$ref": "#/$defs/rgbColor"},
+        "cursor": {"$ref": "#/$defs/rgbColor"},
+        "cursor_shape": {"enum": ["block", "beam", "underline"]},
+        "background_opacity": {"type": "number", "minimum": 0, "maximum": 1},
+        "palette": {
+          "type": "array",
+          "minItems": 16,
+          "maxItems": 16,
+          "items": {"$ref": "#/$defs/rgbColor"}
+        }
+      }
+    },
+    "starshipSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format_version"],
+      "minProperties": 2,
+      "properties": {
+        "format_version": {"$ref": "#/$defs/adapterVersion"},
+        "add_newline": {"type": "boolean"},
+        "palette": {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 32,
+          "propertyNames": {"pattern": "^[A-Za-z][A-Za-z0-9_-]{0,31}$"},
+          "additionalProperties": {"$ref": "#/$defs/rgbColor"}
+        },
+        "modules": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "directory", "git_branch", "git_status", "cmd_duration", "line_break",
+              "character"
+            ]
+          }
+        },
+        "character_symbol": {"type": "string", "minLength": 1, "maxLength": 8},
+        "character_color": {"$ref": "#/$defs/rgbColor"},
+        "directory_color": {"$ref": "#/$defs/rgbColor"},
+        "git_branch_color": {"$ref": "#/$defs/rgbColor"}
+      },
+      "dependentRequired": {
+        "character_symbol": ["character_color"],
+        "character_color": ["character_symbol"]
+      }
+    },
+    "fastfetchSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format_version"],
+      "minProperties": 2,
+      "properties": {
+        "format_version": {"$ref": "#/$defs/adapterVersion"},
+        "logo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "source"],
+          "properties": {
+            "type": {"enum": ["builtin", "small"]},
+            "source": {"$ref": "#/$defs/appName"}
+          }
+        },
+        "separator": {"type": "string", "minLength": 1, "maxLength": 32},
+        "key_color": {"$ref": "#/$defs/appName"},
+        "title_color": {"$ref": "#/$defs/appName"},
+        "output_color": {"$ref": "#/$defs/appName"},
+        "bright_color": {"type": "boolean"},
+        "modules": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "battery", "break", "colors", "cpu", "de", "disk", "display",
+              "font", "gpu", "icons", "kernel", "locale", "memory", "os",
+              "packages", "poweradapter", "shell", "terminal", "terminalfont",
+              "theme", "uptime", "wm"
+            ]
+          }
+        }
       }
     },
     "themeComponent": {

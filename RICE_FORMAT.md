@@ -48,7 +48,7 @@ The initial v2 implementation recognizes only these keys:
 - `wallpaper`
 - `apps`
 
-Each component is strict. Unknown component keys or settings are rejected rather than retained as opaque state. `apps` must currently be empty because no reviewed application adapter exists yet.
+Each component is strict. Unknown component keys or settings are rejected rather than retained as opaque state. `apps` may contain `konsole`, `kitty`, `starship`, and `fastfetch`. Every app object requires `format_version: 1` and at least one field from its reviewed visual subset. Unknown adapters, behavioral settings, paths, commands, and mixed-version fields are rejected. The owned files and exact subsets are documented in [APP_ADAPTERS.md](APP_ADAPTERS.md).
 
 Panel declarations reuse the semantic Phase 3 model described in [PANEL_LAYOUT.md](PANEL_LAYOUT.md). The component contains `{"panels": [...]}` without the standalone panel file's `format_version` field.
 

@@ -4,6 +4,20 @@ All notable project changes will be recorded here. The project has not made a pu
 
 ## Unreleased
 
+### Phase 9 — application adapters
+
+- Added versioned visual schemas and strict parsers for Konsole, Kitty, Starship, and fastfetch.
+- Added complete-file ownership with symlink refusal, mixed-config refusal, atomic writes, semantic
+  verification, exact snapshots, durable journals, recovery, and rollback.
+- Added token-bound app inspection, planning, apply, and revert CLI workflows without starting or
+  reloading applications.
+- Restricted Kitty includes, Starship command-capable modules, fastfetch identity fields and object
+  modules, path-based logos, and every non-visual or behavioral field.
+- Added static repository conversion for the same reviewed subsets with ignored-field reporting and
+  conflict omission.
+- Added app examples, format and safety documentation, and fake-boundary coverage for round trips,
+  stale plans, new-file rollback, mixed configs, and missing executables.
+
 ### Phase 8 — dotfile repository import
 
 - Added HTTPS-only import of full pinned commits from public GitHub and Codeberg repositories.
@@ -11,7 +25,8 @@ All notable project changes will be recorded here. The project has not made a pu
   transports, shallow blob-filtered fetches, and no working-tree checkout.
 - Added static recognizers for reviewed KDE KConfig fields and KDE color-scheme names.
 - Added deferred recognition for Kvantum, Konsole, Kitty, Alacritty, Ghostty, Starship, and
-  fastfetch configuration without copying or applying it.
+  fastfetch configuration without copying or applying it; Phase 9 later promotes the reviewed
+  Konsole, Kitty, Starship, and fastfetch subsets.
 - Added wallpaper references, package-list candidates, script filename reporting, symlink and
   submodule refusal, and a separate unsupported-content inventory.
 - Added publication scanning, sensitive-file omission, personal-path redaction, conflict omission,

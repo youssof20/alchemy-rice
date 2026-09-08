@@ -1,0 +1,19 @@
+{
+  "format_version": 1,
+  "add_newline": false,
+  "palette": {
+    "accent": "#88c0d0",
+    "muted": "#4c566a"
+  },
+  "modules": [
+    "directory",
+    "git_branch",
+    "git_status",
+    "line_break",
+    "character"
+  ],
+  "character_symbol": ">",
+  "character_color": "#88c0d0",
+  "directory_color": "#81a1c1",
+  "git_branch_color": "#a3be8c"
+}

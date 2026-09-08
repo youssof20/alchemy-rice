@@ -58,8 +58,17 @@ entry count, per-file size, and total analyzed text are capped.
 The importer classifies symlinks, submodules, executables, scripts, wallpaper assets, package lists,
 and unsupported content without materializing them. Only allowlisted UTF-8 configuration candidates
 reach static recognizers. Reviewed KDE keys can become rice fields; conflicting values are removed.
-App configurations planned for later adapters remain findings, and all generated data passes the
-rice validator and publication sanitizer before an optional no-overwrite draft is written. The
-service never calls setting drivers, package providers, or repository code.
+Reviewed app subsets can become versioned rice fields while unsupported app configuration remains
+a finding. All generated data passes the rice validator and publication sanitizer before an
+optional no-overwrite draft is written. The service never calls setting drivers, package providers,
+or repository code.
+
+Phase 9 adds narrow application adapters for Konsole, Kitty, Starship, and fastfetch. Each adapter
+owns one exact file and one versioned visual schema. The shared driver reads only configs it can
+fully parse, plans against canonical supported state, writes atomically inside the user's XDG
+roots, verifies by parsing the written file, and participates in the existing snapshot, journal,
+rollback, recovery, and token-drift workflow. Unknown existing fields block apply rather than being
+silently dropped. Repository extraction reuses the domain parsers but only converts allowlisted
+fields; it cannot invoke the transactional drivers.
 
 KDE-specific writers must use the highest-level tested interface available: an official `plasma-apply-*` utility, documented DBus/scripting API, a specific KConfig key with its documented refresh behavior, or a narrowly owned structured file parser. Generic code must not overwrite Plasma panel configuration.

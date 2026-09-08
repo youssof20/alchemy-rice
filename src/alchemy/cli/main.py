@@ -6,6 +6,7 @@ import json
 import sys
 from collections.abc import Sequence
 
+from alchemy.domain.app_adapters import SUPPORTED_APPS
 from alchemy.services.creator_capture import CreatorCaptureService, capture_component_names
 from alchemy.services.debug_info import build_debug_info
 from alchemy.services.dependency_service import DependencyService
@@ -191,6 +192,25 @@ def build_parser() -> argparse.ArgumentParser:
     repository_import.add_argument(
         "--draft", help="Write a new sanitized canonical .rice draft"
     )
+    subcommands.add_parser("app-list", help="List reviewed application adapters")
+    app_inspect = subcommands.add_parser(
+        "app-inspect", help="Inspect one adapter-owned visual config"
+    )
+    app_inspect.add_argument("app", choices=SUPPORTED_APPS)
+    app_plan = subcommands.add_parser(
+        "plan-app", help="Preview a reviewed application config change"
+    )
+    app_plan.add_argument("app", choices=SUPPORTED_APPS)
+    app_plan.add_argument("settings", help="Adapter format 1 settings JSON")
+    app_apply = subcommands.add_parser(
+        "apply-app", help="Apply a reviewed application config plan"
+    )
+    app_apply.add_argument("app", choices=SUPPORTED_APPS)
+    app_apply.add_argument("settings", help="Adapter format 1 settings JSON")
+    app_apply.add_argument("--plan-token", required=True, help="Token emitted by plan-app")
+    app_apply.add_argument(
+        "--yes", action="store_true", help="Confirm the exact plan-app output"
+    )
     return parser
 
 
@@ -257,6 +277,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         "inspect-panels",
         "plan-panels",
         "apply-panels",
+        "app-list",
+        "app-inspect",
+        "plan-app",
+        "apply-app",
         "revert",
         "recovery",
     }:
@@ -386,6 +410,26 @@ async def _run_dependency_command(command: str, arguments: argparse.Namespace) -
 
 def _run_transaction_command(command: str, arguments: argparse.Namespace) -> int:
     service = TransactionService()
+    if command == "app-list":
+        print("\n".join(service.app_names()))
+        return 0
+    if command == "app-inspect":
+        print(json.dumps(service.inspect_app(arguments.app), indent=2, sort_keys=True))
+        return 0
+    if command == "plan-app":
+        app_plan = asyncio.run(service.plan_app(arguments.app, arguments.settings))
+        print(json.dumps(app_plan, indent=2, sort_keys=True))
+        return 0
+    if command == "apply-app":
+        if not arguments.yes:
+            raise TransactionFailedError(
+                "Application apply requires --yes after reviewing plan-app"
+            )
+        app_record = asyncio.run(
+            service.apply_app(arguments.app, arguments.settings, arguments.plan_token)
+        )
+        print(json.dumps(_public_transaction(app_record), indent=2, sort_keys=True))
+        return 0
     if command == "plan-color":
         operations = asyncio.run(service.plan_color_scheme(arguments.scheme))
         print(json.dumps([operation.to_dict() for operation in operations], indent=2))

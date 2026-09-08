@@ -7,6 +7,7 @@ from pathlib import PurePosixPath
 from typing import Any
 from urllib.parse import quote, unquote, urlsplit
 
+from alchemy.domain.app_adapters import extract_repository_app
 from alchemy.domain.rice import SCHEMA_URI, canonical_json_bytes, parse_rice_bytes
 from alchemy.domain.sanitizer import SanitizationContext, scan_publication
 
@@ -70,14 +71,16 @@ _SENSITIVE_BASENAMES = frozenset(
         "known_hosts",
     }
 )
+_APP_LABELS = {
+    "konsole": "Konsole",
+    "kitty": "Kitty",
+    "starship": "Starship",
+    "fastfetch": "fastfetch",
+}
 _DEFERRED_CONFIGS: tuple[tuple[str, str], ...] = (
-    ("kitty.conf", "Kitty configuration"),
     ("alacritty.toml", "Alacritty configuration"),
     ("alacritty.yml", "Alacritty configuration"),
     ("alacritty.yaml", "Alacritty configuration"),
-    ("starship.toml", "Starship configuration"),
-    ("fastfetch/config.jsonc", "fastfetch configuration"),
-    ("fastfetch/config.json", "fastfetch configuration"),
     ("ghostty/config", "Ghostty configuration"),
 )
 _KCONFIG_MAPPINGS: dict[str, dict[tuple[str, str], tuple[str, str, str]]] = {
@@ -287,6 +290,7 @@ def analyze_repository(
     unsupported: list[UnsupportedFile] = []
     findings: list[ImportFinding] = []
     dependency_candidates: list[str] = []
+    conflicted_apps: set[str] = set()
 
     for document in documents:
         display_path, path_findings = _safe_display_path(
@@ -470,6 +474,54 @@ def analyze_repository(
             )
             continue
 
+        app = _repository_app(lower_path, basename.casefold())
+        if app is not None:
+            app_settings, ignored = extract_repository_app(app, document.data)
+            mapped_components: tuple[str, ...] = ()
+            if app_settings is not None:
+                app_mapped = _merge_app(
+                    components,
+                    app,
+                    app_settings,
+                    display_path,
+                    findings,
+                    conflicted_apps,
+                )
+                if app_mapped:
+                    mapped_components = (f"apps.{app}",)
+                    findings.append(
+                        ImportFinding(
+                            "app_dependency_unresolved",
+                            display_path,
+                            f"The {app} executable requires separate package and version review",
+                            True,
+                        )
+                    )
+            else:
+                findings.append(
+                    ImportFinding(
+                        "unsupported_app_config",
+                        display_path,
+                        f"No fields matched the reviewed {app} visual allowlist",
+                    )
+                )
+            if ignored:
+                findings.append(
+                    ImportFinding(
+                        "nonvisual_app_settings_ignored",
+                        display_path,
+                        f"{ignored} unsupported or non-visual top-level setting(s) were ignored",
+                    )
+                )
+            recognized.append(
+                RecognizedFile(
+                    display_path,
+                    f"{_APP_LABELS[app]} configuration",
+                    mapped_components,
+                )
+            )
+            continue
+
         deferred = _deferred_kind(lower_path)
         konsole_file = basename.casefold().endswith(".colorscheme") or (
             basename.casefold().endswith(".profile")
@@ -614,6 +666,18 @@ def _deferred_kind(path: str) -> str | None:
     for suffix, label in _DEFERRED_CONFIGS:
         if path.endswith(suffix.casefold()):
             return label
+    return None
+
+
+def _repository_app(path: str, basename: str) -> str | None:
+    if basename == "kitty.conf":
+        return "kitty"
+    if basename == "starship.toml":
+        return "starship"
+    if path.endswith(("fastfetch/config.jsonc", "fastfetch/config.json")):
+        return "fastfetch"
+    if basename.endswith(".profile") and basename != ".profile":
+        return "konsole"
     return None
 
 
@@ -799,6 +863,35 @@ def _merge_component(
     if previous is None:
         sources[identity] = value, path
         components.setdefault(component, {})[key] = value
+
+
+def _merge_app(
+    components: dict[str, dict[str, Any]],
+    app: str,
+    settings: dict[str, Any],
+    path: str,
+    findings: list[ImportFinding],
+    conflicted_apps: set[str],
+) -> bool:
+    if app in conflicted_apps:
+        return False
+    apps = components.setdefault("apps", {})
+    previous = apps.get(app)
+    if previous is not None and previous != settings:
+        apps.pop(app, None)
+        conflicted_apps.add(app)
+        findings.append(
+            ImportFinding(
+                "conflicting_app_config",
+                path,
+                f"Multiple repository files disagree about apps.{app}",
+                True,
+            )
+        )
+        return False
+    if previous is None:
+        apps[app] = settings
+    return True
 
 
 def _style_engine(value: str) -> str:

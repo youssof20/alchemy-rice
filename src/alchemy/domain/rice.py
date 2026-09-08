@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
+from alchemy.domain.app_adapters import validate_apps
 from alchemy.domain.capabilities import CapabilityMatrix
 from alchemy.domain.panels import parse_panel_layout
 from alchemy.domain.versioning import Version, VersionRange
@@ -598,9 +599,7 @@ def _validate_wallpaper(value: Any) -> None:
 
 
 def _validate_apps(value: Any) -> None:
-    item = _object(value, "Apps")
-    if item:
-        raise ValueError("App adapter settings are not supported by the v2 implementation yet")
+    validate_apps(value)
 
 
 def _validate_dependencies(value: Any) -> None:

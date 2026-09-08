@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "logo": {
+    "type": "small",
+    "source": "arch"
+  },
+  "separator": " :: ",
+  "key_color": "blue",
+  "title_color": "cyan",
+  "output_color": "white",
+  "bright_color": false,
+  "modules": [
+    "os",
+    "kernel",
+    "uptime",
+    "de",
+    "terminal",
+    "memory"
+  ]
+}

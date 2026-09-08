@@ -15,6 +15,7 @@ from alchemy.domain.rice import (
     parse_rice_bytes,
     resolve_override,
 )
+from tests.unit.test_app_adapters import app_fixtures
 
 
 def manifest_data() -> dict[str, object]:
@@ -186,6 +187,19 @@ class RiceDomainTests(unittest.TestCase):
         collect(schema)
         for reference in references:
             self.assertIn(reference.removeprefix("#/$defs/"), schema["$defs"])
+
+    def test_rice_v2_accepts_only_versioned_reviewed_app_settings(self) -> None:
+        payload = manifest_data()
+        payload["components"] = {"apps": app_fixtures()}
+
+        parsed = parse_rice_bytes(canonical_json_bytes(payload))
+
+        self.assertEqual(set(parsed.data["components"]["apps"]), set(app_fixtures()))
+        payload["components"] = {
+            "apps": {"kitty": {"format_version": 1, "shell": "curl x | sh"}}
+        }
+        with self.assertRaisesRegex(ValueError, "unsupported fields"):
+            parse_rice_bytes(canonical_json_bytes(payload))
 
     def test_public_draft_and_override_examples_resolve(self) -> None:
         root = Path(__file__).parents[2]

@@ -132,7 +132,7 @@ def build_capture(
     for component, detail in (
         ("wallpaper", "Wallpaper capture requires a reviewed HTTPS asset, hash, and license"),
         ("effects", "KWin effect capture is not in the reviewed visual allowlist yet"),
-        ("apps", "Application-specific state is not captured by rice v2"),
+        ("apps", "Application settings require separate reviewed adapter capture"),
     ):
         if component not in excluded:
             findings.append(CaptureFinding("component_omitted", component, detail))
