@@ -4,6 +4,17 @@ All notable project changes will be recorded here. The project has not made a pu
 
 ## Unreleased
 
+### Phase 3 — semantic panel engine
+
+- Added strict declarative panel-layout parsing with input caps, semantic dimensions, logical screen roles, and duplicate-edge refusal.
+- Added public current-panel inspection using Plasma's layout serializer and scripting metadata.
+- Added left/center/right widget-slot compilation with expanding Plasma spacers and stable ordering.
+- Added installed-widget preflight validation with explicit refusal for missing third-party dependencies.
+- Added complete multi-monitor mapping previews and confirmation tokens invalidated by layout or display changes.
+- Added Plasma-scripted panel replacement, semantic verification, captured configuration rollback, and transaction recovery support without broad applet configuration replacement.
+- Redacted transaction internals from CLI output and restricted journal and snapshot permissions on POSIX systems.
+- Added fake-boundary coverage for parser limits, mapping, dependencies, apply, verification, and automatic rollback.
+
 ### Phase 2 — core Plasma drivers
 
 - Added a registry of transactional drivers for icons, cursors, fonts, Plasma theme, application style, window decoration, and selected KWin settings.

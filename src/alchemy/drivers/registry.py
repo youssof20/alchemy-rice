@@ -4,6 +4,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from alchemy.drivers.kconfig import KConfigDriver, KConfigSpec
+from alchemy.drivers.panels import PanelDriver
 from alchemy.drivers.wallpaper import WallpaperDriver
 from alchemy.platform.commands import Runner
 from alchemy.platform.kde_notifications import KdeNotifier, Notifier, RefreshAction
@@ -242,4 +243,10 @@ class DriverRegistry:
             kwriteconfig=kwriteconfig,
             config_path=self.config_root / spec.config_file,
             apply_tool=apply_tool,
+        )
+
+    def create_panel(self) -> PanelDriver:
+        return PanelDriver(
+            self.plasma_shell,
+            config_path=self.config_root / "plasma-org.kde.plasma.desktop-appletsrc",
         )

@@ -10,11 +10,13 @@ from typing import Any, Protocol
 from alchemy.domain.capabilities import EnvironmentReport
 from alchemy.domain.transactions import Operation, TransactionState, VerificationResult
 from alchemy.drivers.color_scheme import ColorSchemeDriver
+from alchemy.drivers.panels import PanelDriver
 from alchemy.drivers.registry import DriverRegistry
 from alchemy.platform.commands import CommandRunner, Runner
 from alchemy.platform.journal import JournalStore
 from alchemy.platform.kde_notifications import KdeNotifier, Notifier
 from alchemy.platform.locking import MutationLock
+from alchemy.platform.plasma_shell import PlasmaShell
 from alchemy.platform.snapshots import SnapshotStore
 from alchemy.services.environment_probe import EnvironmentProbe
 
@@ -52,6 +54,7 @@ class TransactionService:
         which: Callable[[str], str | None] | None = None,
         probe: EnvironmentProbe | None = None,
         notifier: Notifier | None = None,
+        plasma_shell: PlasmaShell | None = None,
     ) -> None:
         self.home = (home or Path.home()).absolute()
         self.config_root = config_root or _xdg_config_root(self.home)
@@ -67,6 +70,7 @@ class TransactionService:
             home=self.home,
             config_root=self.config_root,
             notifier=self.notifier,
+            plasma_shell=plasma_shell,
         )
         self.journals = JournalStore(self.state_root / "transactions")
         self.snapshots = SnapshotStore(self.data_root / "snapshots", home=self.home)
@@ -94,14 +98,50 @@ class TransactionService:
         self._require_mutation_environment(report)
         return await self._apply_driver(self._registry_driver(name), desired, report)
 
+    async def inspect_panels(self) -> dict[str, Any]:
+        return await self.registry.create_panel().inspect()
+
+    async def plan_panels(self, layout_path: str) -> dict[str, Any]:
+        report = self.probe.inspect()
+        self._require_mutation_environment(report)
+        driver = self.registry.create_panel()
+        operations = await driver.plan(layout_path)
+        if not operations:
+            return {"state": "no_change", "current": await driver.inspect()}
+        return driver.public_plan(operations[0])
+
+    async def apply_panels(
+        self, layout_path: str, confirmation_token: str
+    ) -> dict[str, Any] | None:
+        report = self.probe.inspect()
+        self._require_mutation_environment(report)
+        return await self._apply_driver(
+            self.registry.create_panel(),
+            layout_path,
+            report,
+            confirmation_token=confirmation_token,
+        )
+
     async def _apply_driver(
-        self, driver: TransactionalDriver, desired: str, report: EnvironmentReport
+        self,
+        driver: TransactionalDriver,
+        desired: str,
+        report: EnvironmentReport,
+        *,
+        confirmation_token: str | None = None,
     ) -> dict[str, Any] | None:
         with MutationLock(self.lock_path):
             operations = await driver.plan(desired)
             if not operations:
                 return None
             operation = operations[0]
+            if confirmation_token is not None and (
+                driver.name != PanelDriver.name
+                or PanelDriver.confirmation_token(operation) != confirmation_token
+            ):
+                raise TransactionFailedError(
+                    "Panel state or screen mapping changed after preview; run plan-panels again"
+                )
             snapshot = self.snapshots.create(
                 (driver.config_path,),
                 driver=driver.name,
@@ -227,6 +267,8 @@ class TransactionService:
     def _driver_for_recovery(self, name: str) -> TransactionalDriver:
         if name == ColorSchemeDriver.name:
             return self._color_driver(True)
+        if name == PanelDriver.name:
+            return self.registry.create_panel()
         return self._registry_driver(name)
 
     def _registry_driver(self, name: str) -> TransactionalDriver:

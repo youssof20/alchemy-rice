@@ -35,7 +35,9 @@ class SnapshotStore:
     ) -> dict[str, Any]:
         snapshot_id = f"{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}-{uuid.uuid4()}"
         destination = self.directory / snapshot_id
-        destination.mkdir(parents=True, exist_ok=False)
+        destination.mkdir(parents=True, exist_ok=False, mode=0o700)
+        if os.name != "nt":
+            os.chmod(destination, 0o700)
         manifest: dict[str, Any] = {
             "snapshot_id": snapshot_id,
             "created_at": datetime.now(UTC).isoformat(),
@@ -49,6 +51,8 @@ class SnapshotStore:
             with tarfile.open(archive_path, "w", dereference=False) as archive:
                 for path in paths:
                     manifest["entries"].append(self._capture_entry(archive, path, driver))
+            if os.name != "nt":
+                os.chmod(archive_path, 0o600)
             write_json_atomic(destination / "manifest.json", manifest)
         except Exception:
             # Leave a visible incomplete snapshot directory for diagnosis. It is

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import stat
 import tempfile
 import unittest
 from pathlib import Path
@@ -40,6 +42,12 @@ class JournalStoreTests(unittest.TestCase):
             loaded = store.load(str(record["transaction_id"]))
             self.assertEqual(loaded["state"], "committed")
             self.assertEqual(store.incomplete(), ())
+            if os.name != "nt":
+                self.assertEqual(stat.S_IMODE(store.directory.stat().st_mode), 0o700)
+                self.assertEqual(
+                    stat.S_IMODE(store.path_for(str(record["transaction_id"])).stat().st_mode),
+                    0o600,
+                )
 
     def test_rejects_invalid_state_transition(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

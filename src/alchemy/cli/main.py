@@ -44,6 +44,21 @@ def build_parser() -> argparse.ArgumentParser:
     setting_apply.add_argument(
         "--yes", action="store_true", help="Confirm the exact operation shown by plan-setting"
     )
+    subcommands.add_parser("inspect-panels", help="Inspect the current semantic panel layout")
+    panel_plan = subcommands.add_parser(
+        "plan-panels", help="Preview panel layout and logical screen mapping"
+    )
+    panel_plan.add_argument("layout", help="Declarative panel-layout JSON file")
+    panel_apply = subcommands.add_parser(
+        "apply-panels", help="Apply a reviewed declarative panel layout"
+    )
+    panel_apply.add_argument("layout", help="Declarative panel-layout JSON file")
+    panel_apply.add_argument(
+        "--yes", action="store_true", help="Confirm the exact output shown by plan-panels"
+    )
+    panel_apply.add_argument(
+        "--plan-token", required=True, help="Confirmation token emitted by plan-panels"
+    )
     revert_parser = subcommands.add_parser("revert", help="Revert a committed transaction")
     revert_parser.add_argument("--last", action="store_true", help="Revert the latest commit")
     recovery = subcommands.add_parser("recovery", help="Inspect or restore incomplete journals")
@@ -66,6 +81,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         "list-settings",
         "plan-setting",
         "apply-setting",
+        "inspect-panels",
+        "plan-panels",
+        "apply-panels",
         "revert",
         "recovery",
     }:
@@ -96,7 +114,7 @@ def _run_transaction_command(command: str, arguments: argparse.Namespace) -> int
         if not arguments.yes:
             raise TransactionFailedError("Apply requires --yes after reviewing plan-color output")
         record = asyncio.run(service.apply_color_scheme(arguments.scheme))
-        print(json.dumps(record or {"state": "no_change"}, indent=2, sort_keys=True))
+        print(json.dumps(_public_transaction(record), indent=2, sort_keys=True))
         return 0
     if command == "list-settings":
         print("\n".join(service.setting_names()))
@@ -109,27 +127,72 @@ def _run_transaction_command(command: str, arguments: argparse.Namespace) -> int
         if not arguments.yes:
             raise TransactionFailedError("Apply requires --yes after reviewing plan-setting output")
         record = asyncio.run(service.apply_component(arguments.setting, arguments.value))
-        print(json.dumps(record or {"state": "no_change"}, indent=2, sort_keys=True))
+        print(json.dumps(_public_transaction(record), indent=2, sort_keys=True))
+        return 0
+    if command == "inspect-panels":
+        print(json.dumps(asyncio.run(service.inspect_panels()), indent=2, sort_keys=True))
+        return 0
+    if command == "plan-panels":
+        plan = asyncio.run(service.plan_panels(arguments.layout))
+        print(json.dumps(plan, indent=2, sort_keys=True))
+        return 0
+    if command == "apply-panels":
+        if not arguments.yes:
+            raise TransactionFailedError("Apply requires --yes after reviewing plan-panels output")
+        record = asyncio.run(service.apply_panels(arguments.layout, arguments.plan_token))
+        print(json.dumps(_public_transaction(record), indent=2, sort_keys=True))
         return 0
     if command == "revert":
         if not arguments.last:
             raise TransactionFailedError("Specify --last")
-        print(json.dumps(asyncio.run(service.revert_last()), indent=2, sort_keys=True))
+        print(
+            json.dumps(
+                _public_transaction(asyncio.run(service.revert_last())),
+                indent=2,
+                sort_keys=True,
+            )
+        )
         return 0
     if arguments.rollback:
         recovered = asyncio.run(service.recover(arguments.rollback))
-        print(json.dumps(recovered, indent=2, sort_keys=True))
+        print(json.dumps(_public_transaction(recovered), indent=2, sort_keys=True))
         return 0
     incomplete = service.journals.incomplete()
-    print(json.dumps(incomplete, indent=2, sort_keys=True))
+    print(
+        json.dumps(
+            [_public_transaction(record) for record in incomplete], indent=2, sort_keys=True
+        )
+    )
     return 0
+
+
+def _public_transaction(record: dict[str, object] | None) -> dict[str, object]:
+    if record is None:
+        return {"state": "no_change"}
+    public = {
+        key: record.get(key)
+        for key in (
+            "transaction_id",
+            "state",
+            "started_at",
+            "updated_at",
+            "snapshot_id",
+            "rollback_status",
+            "error",
+        )
+    }
+    operations = record.get("operations")
+    if isinstance(operations, list) and operations and isinstance(operations[0], dict):
+        public["driver"] = operations[0].get("driver")
+        public["description"] = operations[0].get("description")
+    return public
 
 
 def _print_report(report: dict[str, object]) -> None:
     capabilities = report["capabilities"]
     assert isinstance(capabilities, dict)
     print("Alchemy read-only inspector")
-    print("Apply: reviewed Phase 2 settings when capability checks pass")
+    print("Apply: reviewed settings and panel layouts when capability checks pass")
     print()
     for key, value in capabilities.items():
         print(f"{key.replace('_', ' ').title():22} {_display(value)}")
