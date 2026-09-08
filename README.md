@@ -1,6 +1,6 @@
 # Alchemy
 
-Alchemy is a free, GPL-licensed KDE Plasma 6 ricing workbench under active development. The current Phase 7 build detects the desktop environment, provides transactional CLI paths for core appearance settings and semantic panel layouts, safely handles the config-only `.rice` v2 format, creates sanitized rice drafts, resolves separately disclosed dependencies, and provides an offline-first community gallery index.
+Alchemy is a free, GPL-licensed KDE Plasma 6 ricing workbench under active development. The current Phase 8 build detects the desktop environment, provides transactional CLI paths for core appearance settings and semantic panel layouts, safely handles the config-only `.rice` v2 format, creates sanitized rice drafts, resolves separately disclosed dependencies, provides an offline-first community gallery index, and statically converts supported settings from pinned public dotfile repositories.
 
 Every apply acquires the shared mutation lock before reading state, creates a targeted snapshot, opens a durable journal, applies through a reviewed KDE interface, verifies the observed setting, and restores the previous state if verification fails. Drivers cover color schemes, icons, cursors, fonts, Plasma themes, wallpaper, application style, window decoration, and selected KWin behavior.
 
@@ -43,6 +43,9 @@ A `.rice` is canonical declarative JSON, not an archive or installer. Alchemy va
 - Deterministic static snapshot generation with maintainer-owned metrics and derived objective badges.
 - An ETag-aware local gallery cache, offline search, five explainable sorts, and a cached Qt browser.
 - Local compatibility report previews that generate a prefilled GitHub URL without opening it or uploading data.
+- HTTPS-only, commit-pinned repository import into an isolated bounded bare-Git cache with no checkout, hooks, submodules, or contributor-code execution.
+- Static recognizers for reviewed KDE settings, color schemes, app-config references, wallpaper references, package lists, and script filenames.
+- Sanitized rice draft conversion with conflict omission, unresolved-provenance findings, and a separate unsupported-content report.
 - Unit tests that run without a KDE session.
 
 The inspector reports unknown values instead of inferring KDE support from a version number. Union detection is deliberately unknown until a stable capability probe is available.
@@ -85,6 +88,8 @@ alchemy gallery-cache gallery.json
 alchemy gallery-list --sort compatible
 alchemy gallery
 alchemy gallery-report ENTRY_ID --result success
+alchemy repo-import https://github.com/example/dotfiles.git COMMIT examples/repository-import-metadata.json
+alchemy repo-import https://github.com/example/dotfiles.git COMMIT examples/repository-import-metadata.json --draft imported.rice
 alchemy revert --last
 alchemy recovery --list
 ```
@@ -101,7 +106,7 @@ The repository does not yet provide a distro package or portable release. See [P
 
 Writers are unavailable unless the host is Linux, an active KDE session reports a version in the current 6.6-6.8 target window, plasma-manager is not detected as the state owner, and each driver's required KDE tools exist. External commands are invoked as argument vectors without a shell. Debug output is generated locally and redacted before display; Alchemy does not upload it.
 
-The transaction, driver, capture, package-provider, and gallery-network behavior has fake-boundary unit coverage but has not yet been validated in a real Plasma VM. Current limitations and test evidence are recorded in [COMPATIBILITY.md](COMPATIBILITY.md). Setting names and accepted values are documented in [SETTING_REFERENCE.md](SETTING_REFERENCE.md); panel layout fields are documented in [PANEL_LAYOUT.md](PANEL_LAYOUT.md), creator review in [CAPTURE_WORKFLOW.md](CAPTURE_WORKFLOW.md), dependency trust and installation in [DEPENDENCY_RESOLUTION.md](DEPENDENCY_RESOLUTION.md), and gallery submission and caching in [GALLERY.md](GALLERY.md).
+The transaction, driver, capture, package-provider, gallery-network, and repository-import behavior has fake-boundary unit coverage but has not yet been validated in a real Plasma VM. Current limitations and test evidence are recorded in [COMPATIBILITY.md](COMPATIBILITY.md). Setting names and accepted values are documented in [SETTING_REFERENCE.md](SETTING_REFERENCE.md); panel layout fields are documented in [PANEL_LAYOUT.md](PANEL_LAYOUT.md), creator review in [CAPTURE_WORKFLOW.md](CAPTURE_WORKFLOW.md), dependency trust and installation in [DEPENDENCY_RESOLUTION.md](DEPENDENCY_RESOLUTION.md), gallery submission and caching in [GALLERY.md](GALLERY.md), and the dotfile bridge in [REPOSITORY_IMPORT.md](REPOSITORY_IMPORT.md).
 
 ## Project documents
 
@@ -115,6 +120,7 @@ The transaction, driver, capture, package-provider, and gallery-network behavior
 - [CAPTURE_WORKFLOW.md](CAPTURE_WORKFLOW.md)
 - [DEPENDENCY_RESOLUTION.md](DEPENDENCY_RESOLUTION.md)
 - [GALLERY.md](GALLERY.md)
+- [REPOSITORY_IMPORT.md](REPOSITORY_IMPORT.md)
 - [COMPATIBILITY.md](COMPATIBILITY.md)
 - [PACKAGING.md](PACKAGING.md)
 - [CHANGELOG.md](CHANGELOG.md)

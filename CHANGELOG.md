@@ -4,6 +4,21 @@ All notable project changes will be recorded here. The project has not made a pu
 
 ## Unreleased
 
+### Phase 8 — dotfile repository import
+
+- Added HTTPS-only import of full pinned commits from public GitHub and Codeberg repositories.
+- Added a bounded bare-Git cache with isolated configuration, disabled hooks and non-HTTPS
+  transports, shallow blob-filtered fetches, and no working-tree checkout.
+- Added static recognizers for reviewed KDE KConfig fields and KDE color-scheme names.
+- Added deferred recognition for Kvantum, Konsole, Kitty, Alacritty, Ghostty, Starship, and
+  fastfetch configuration without copying or applying it.
+- Added wallpaper references, package-list candidates, script filename reporting, symlink and
+  submodule refusal, and a separate unsupported-content inventory.
+- Added publication scanning, sensitive-file omission, personal-path redaction, conflict omission,
+  provenance and license findings, and validated no-overwrite rice draft output.
+- Added CLI documentation, example metadata, and tests for input boundaries, mapping, reporting,
+  selective reads, command construction, and non-applying behavior.
+
 ### Phase 7 — community gallery
 
 - Added strict gallery entry and static snapshot schemas with duplicate-key and hostile-input limits.

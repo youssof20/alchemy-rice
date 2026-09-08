@@ -1,0 +1,21 @@
+{
+  "id": "github:example/dotfiles:imported-workbench",
+  "name": "Imported Workbench",
+  "version": "1.0.0",
+  "author": {
+    "name": "Example author"
+  },
+  "source": {
+    "repo": "https://github.com/example/dotfiles.git",
+    "release": "v1.0.0",
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "compatibility": {
+    "plasma": ">=6.6,<6.9",
+    "session": [
+      "wayland"
+    ],
+    "tested": []
+  },
+  "licenses": []
+}

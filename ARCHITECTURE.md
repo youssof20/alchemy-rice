@@ -49,4 +49,17 @@ document and derives all badges. `GalleryService` performs one explicit snapshot
 reuse, validates before atomically replacing the owner-only cache, and serves search, sorting, detail,
 and report previews without per-entry network access. The Qt gallery reads the same cached service.
 
+Phase 8 adds a repository-import domain between untrusted Git objects and rice validation. A full
+commit SHA and source URL bind the request to its metadata. The platform adapter initializes a bare
+repository from an empty template, fetches only that commit under isolated Git configuration, and
+reads the tree and bounded blobs without creating a working tree. Time, cache growth, command output,
+entry count, per-file size, and total analyzed text are capped.
+
+The importer classifies symlinks, submodules, executables, scripts, wallpaper assets, package lists,
+and unsupported content without materializing them. Only allowlisted UTF-8 configuration candidates
+reach static recognizers. Reviewed KDE keys can become rice fields; conflicting values are removed.
+App configurations planned for later adapters remain findings, and all generated data passes the
+rice validator and publication sanitizer before an optional no-overwrite draft is written. The
+service never calls setting drivers, package providers, or repository code.
+
 KDE-specific writers must use the highest-level tested interface available: an official `plasma-apply-*` utility, documented DBus/scripting API, a specific KConfig key with its documented refresh behavior, or a narrowly owned structured file parser. Generic code must not overwrite Plasma panel configuration.

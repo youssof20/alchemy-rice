@@ -11,6 +11,7 @@ from alchemy.services.debug_info import build_debug_info
 from alchemy.services.dependency_service import DependencyService
 from alchemy.services.environment_probe import EnvironmentProbe
 from alchemy.services.gallery_service import GalleryService
+from alchemy.services.repository_import_service import RepositoryImportService
 from alchemy.services.rice_service import RiceService
 from alchemy.services.transaction_service import TransactionFailedError, TransactionService
 
@@ -178,6 +179,18 @@ def build_parser() -> argparse.ArgumentParser:
     gallery_report.add_argument("--result", required=True, choices=("success", "failure"))
     gallery_report.add_argument("--failed-component")
     gallery_report.add_argument("--error-class")
+    repository_import = subcommands.add_parser(
+        "repo-import",
+        help="Statically inspect one pinned public dotfile repository",
+    )
+    repository_import.add_argument("url", help="Public GitHub or Codeberg HTTPS Git URL")
+    repository_import.add_argument("commit", help="Full lowercase 40-character commit SHA")
+    repository_import.add_argument(
+        "metadata", help="Rice identity, compatibility, source, and license metadata JSON"
+    )
+    repository_import.add_argument(
+        "--draft", help="Write a new sanitized canonical .rice draft"
+    )
     return parser
 
 
@@ -196,6 +209,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     if command.startswith("gallery-"):
         try:
             return _run_gallery_command(command, arguments)
+        except (RuntimeError, ValueError, OSError) as exc:
+            print(f"Alchemy: {exc}", file=sys.stderr)
+            return 1
+
+    if command == "repo-import":
+        try:
+            result = RepositoryImportService().import_repository(
+                arguments.url,
+                arguments.commit,
+                arguments.metadata,
+                draft_destination=arguments.draft,
+            )
+            print(json.dumps(result, indent=2, sort_keys=True))
+            return 0
         except (RuntimeError, ValueError, OSError) as exc:
             print(f"Alchemy: {exc}", file=sys.stderr)
             return 1

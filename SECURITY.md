@@ -4,7 +4,7 @@ Alchemy modifies desktop configuration, so a setting writer is security-sensitiv
 
 ## Current state
 
-The Phase 6 build permits a reviewed set of core Plasma mutations and semantic panel layouts when conservative capability checks pass. It acquires the shared lock before observing mutable state, snapshots the affected user file, persists the journal state before mutation, applies through a setting-specific KDE interface, verifies the observed state, and rolls back on failure. Rice import, creator capture, and dependency resolution remain non-applying operations. Dependency installation is a separate explicit operation.
+The Phase 8 build permits a reviewed set of core Plasma mutations and semantic panel layouts when conservative capability checks pass. It acquires the shared lock before observing mutable state, snapshots the affected user file, persists the journal state before mutation, applies through a setting-specific KDE interface, verifies the observed state, and rolls back on failure. Rice import, creator capture, gallery browsing, and repository import remain non-applying operations. Dependency installation is a separate explicit operation.
 
 KConfig values reject control characters and enumerated values are allowlisted where upstream defines a closed set. Commands use argument vectors without a shell. Wallpaper paths must resolve to local regular files; wallpaper apply refuses layouts whose per-desktop state cannot be exactly reconstructed by the official KDE utility.
 
@@ -35,6 +35,22 @@ Pull-request validation executes the validator from the trusted base revision. T
 checkout is neither installed nor imported, credentials are not persisted, and the job has a
 read-only token. Snapshot replacement occurs only after full validation. Redirect destinations are
 restricted to the expected forge or its release-asset hosts, and an unexpected hash blocks reuse.
+
+Repository import accepts only a plain public GitHub or Codeberg HTTPS URL and a full lowercase
+commit SHA. It creates a bare cache from an empty template and does not create a checkout. Git's
+global and system configuration are disabled, hooks point to the null device, non-HTTPS transports
+are denied, TLS verification is required, and redirects are limited to the initial request. Fetches
+are shallow, tag-free, submodule-free, blob-filtered, time-bounded, output-bounded, and monitored
+against a cache-size cap.
+
+Tree entries are parsed before content access. Symlinks and submodules are never followed;
+executables are never read or run; sensitive filenames are not read; and unsupported or binary
+files are not copied. Only size-bounded static text candidates are read by object ID, with a second
+cap on total analyzed bytes. Recognizers accept exact visual keys rather than arbitrary KConfig.
+Scripts are reported by filename only. Credential-shaped content is quarantined, personal paths are
+redacted from reports, conflicting settings are omitted, and the generated draft is validated and
+sanitized again. A repository import never invokes a build system, package manager, setting driver,
+or shell.
 
 ## Invariants
 

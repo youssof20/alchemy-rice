@@ -12,7 +12,7 @@ Target distro testing includes Arch-family systems, Fedora KDE, KDE neon, and Ku
 
 ## Current evidence
 
-Phase 0 through Phase 7 unit tests run on Windows without KDE. No real Plasma integration result has been recorded in this repository yet. The inspector is designed to report unavailable or unknown capabilities rather than claim support without evidence.
+Phase 0 through Phase 8 unit tests run on Windows without KDE. No real Plasma integration result has been recorded in this repository yet. The inspector is designed to report unavailable or unknown capabilities rather than claim support without evidence.
 
 The color-scheme and Phase 2 core drivers are implemented for eligible Plasma 6.6-6.8 sessions. Their plan/apply/verify/rollback behavior is verified against fake KDE, DBus, and Plasma-shell boundaries; real KDE verification is still required. Drivers require `kreadconfig6` and `kwriteconfig6`, with official `plasma-apply-*` utilities required where used.
 
@@ -31,5 +31,16 @@ reuse, offline browsing, and local report generation have fake-boundary coverage
 scaffold and report form are served from this repository until the separate `alchemy-rice-index`
 repository is published. No real creator submission exists, so no live ownership, release-asset,
 screenshot, scheduled-workflow, or completed report-form result is recorded.
+
+Phase 8 repository source validation, Git command construction, tree parsing, selective blob reads,
+KDE conversion, conflict omission, secret/path reporting, dependency candidates, unsupported-content
+reporting, and no-overwrite draft export have platform-independent or fake-boundary coverage. The
+current importer accepts public GitHub and Codeberg HTTPS repositories using 40-character SHA-1
+commit identities. It does not yet understand Git SHA-256 object formats. Network behavior depends
+on a local Git executable and forge support for reachable commit fetches and partial-clone filters.
+Konsole, terminal, Starship, fastfetch, and Kvantum files are recognized but deliberately deferred
+until their reviewed adapters exist. A live Windows smoke test on 2026-09-08 fetched the project's
+public Phase 7 commit into the bounded bare cache, enumerated 101 entries, and read the README blob
+by object ID. No repository import has been applied to a real Plasma session.
 
 When adding an integration result, record the distro, exact Plasma version, session type, test date, and whether the behavior was documented or observed.

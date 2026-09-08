@@ -12,6 +12,13 @@ Dependency resolution reads the rice, local environment facts, bundled compatibi
 
 `alchemy gallery-refresh` is an explicit network action that fetches one static index and stores its ETag, fetch time, and hash locally. Gallery list, detail, search, sorting, and the Qt browser use only that cache and make no per-card API requests. `gallery-report` prints the complete local report and a prefilled GitHub URL; it does not open the browser or upload the report.
 
-Future network access beyond the gallery snapshot will be tied to a visible user action such as importing a public repository, checking for a release when enabled, or downloading an approved dependency. Screenshots, rice exports, configuration, package lists, and failure reports will not be uploaded automatically.
+`alchemy repo-import` is an explicit network action. It sends the public repository URL and pinned
+commit request to GitHub or Codeberg through Git and stores a bounded bare repository in the user's
+local cache. It does not upload local configuration, environment facts, imported content, findings,
+or the generated draft. Reports omit matched secret values and redact repository paths that contain
+detected local identity or path data. The cache may contain source blobs from the public repository;
+users should treat it as local source data.
+
+Future network access beyond the gallery snapshot and explicit public-repository import will be tied to a visible user action such as checking for a release when enabled or downloading an approved dependency. Screenshots, rice exports, configuration, package lists, and failure reports will not be uploaded automatically.
 
 Debug redaction and capture sanitization are safety aids, not guarantees. Review output before posting it publicly.
