@@ -26,6 +26,16 @@ Install commands are fixed argument vectors, never manifest-provided strings and
 
 Package installation is intentionally outside the configuration transaction. A rice revert never blindly uninstalls a package because it may predate Alchemy or be shared by other applications. Receipts record what Alchemy installed so a future guided cleanup can make an informed, separate decision.
 
+Gallery entry and snapshot inputs have byte, tree, collection, string, identifier, date, and URL
+limits. Gallery v1 permits only source-owned GitHub or Codeberg release assets and commit-pinned raw
+screenshots. Remote validation fetches a derived ownership challenge, a canonical rice, and bounded
+PNG/JPEG/WebP bytes; it compares hashes and rice projections without running repository content.
+
+Pull-request validation executes the validator from the trusted base revision. The contributor
+checkout is neither installed nor imported, credentials are not persisted, and the job has a
+read-only token. Snapshot replacement occurs only after full validation. Redirect destinations are
+restricted to the expected forge or its release-asset hosts, and an unexpected hash blocks reuse.
+
 ## Invariants
 
 - A `.rice` is data, not an installer.

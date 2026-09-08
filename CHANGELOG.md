@@ -4,6 +4,23 @@ All notable project changes will be recorded here. The project has not made a pu
 
 ## Unreleased
 
+### Phase 7 — community gallery
+
+- Added strict gallery entry and static snapshot schemas with duplicate-key and hostile-input limits.
+- Added GitHub and Codeberg source ownership proofs derived from a full pinned commit.
+- Added safe remote verification of canonical rice projections, release hashes, screenshot hashes,
+  supported image headers, compatibility declarations, and license metadata.
+- Added a pull-request workflow that runs trusted base-revision validation while treating the
+  contributor checkout only as data.
+- Added deterministic snapshot generation with a source digest, maintainer-owned metrics, and
+  explainable derived badges.
+- Added explicit ETag-aware snapshot refresh, integrity-checked local cache import, offline search,
+  detail views, and five documented sorts without per-card API calls.
+- Added a cached Qt gallery browser and local compatibility report previews that generate a
+  prefilled GitHub form URL without opening it or uploading data.
+- Added fake-boundary tests for remote tampering, ownership, cache reuse, offline behavior,
+  deterministic output, reports, and hostile metadata.
+
 ### Phase 6 — dependency resolver
 
 - Added explicit Tier A distribution, Tier B community, and Tier C manual trust classifications and user-facing labels.

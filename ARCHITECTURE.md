@@ -38,4 +38,15 @@ Phase 6 adds a dependency domain and provider boundary. Resolution combines immu
 
 An install plan is an argument vector with an explicit privilege reason and a token bound to the rice hash, environment, candidate, compatibility status, and command. Installation is a separate command that reacquires the shared mutation lock and recomputes that token before invoking the provider. Only confirmed Tier A mappings are automatable in this phase. A successful provider exit is insufficient: the adapter must observe the package afterward before an owner-only receipt is written. Dependency receipts never instruct config rollback to uninstall a package.
 
+Phase 7 adds a gallery domain that accepts only bounded metadata projections over creator-owned,
+immutable rice releases. Pull-request validation uses the trusted base revision and treats the
+contributor checkout solely as input data. Remote verification derives an ownership proof URL from
+the pinned repository commit, verifies canonical rice and screenshot hashes, and never invokes
+repository code.
+
+The static builder deterministically combines entries with a separate maintainer-owned metrics
+document and derives all badges. `GalleryService` performs one explicit snapshot request with ETag
+reuse, validates before atomically replacing the owner-only cache, and serves search, sorting, detail,
+and report previews without per-entry network access. The Qt gallery reads the same cached service.
+
 KDE-specific writers must use the highest-level tested interface available: an official `plasma-apply-*` utility, documented DBus/scripting API, a specific KConfig key with its documented refresh behavior, or a narrowly owned structured file parser. Generic code must not overwrite Plasma panel configuration.

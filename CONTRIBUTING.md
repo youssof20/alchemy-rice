@@ -25,5 +25,11 @@ Core logic and tests must run without a KDE session. KDE-specific behavior requi
 - Add tests for parsing, planning, mutation, verification, and rollback behavior as applicable.
 - Document the exact Plasma version, session, and distro used for integration tests.
 - Do not commit personal configuration, generated prompts, planning notes, secrets, or private paths.
+- Keep gallery submissions metadata-only and run both deterministic snapshot checks. Gallery CI must
+  use trusted validator code and must never install or execute a contributor checkout.
+
+Gallery entry ownership, release, screenshot, license, and hash requirements are documented in
+`GALLERY.md`. Structural validation is local; remote verification additionally reads bounded public
+bytes from the creator's pinned repository.
 
 KDE APIs and configuration keys change. Link to upstream documentation or source in a pull request when adding a driver, and distinguish documented behavior from an observed workaround.

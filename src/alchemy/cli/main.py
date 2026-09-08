@@ -10,6 +10,7 @@ from alchemy.services.creator_capture import CreatorCaptureService, capture_comp
 from alchemy.services.debug_info import build_debug_info
 from alchemy.services.dependency_service import DependencyService
 from alchemy.services.environment_probe import EnvironmentProbe
+from alchemy.services.gallery_service import GalleryService
 from alchemy.services.rice_service import RiceService
 from alchemy.services.transaction_service import TransactionFailedError, TransactionService
 
@@ -27,6 +28,7 @@ def build_parser() -> argparse.ArgumentParser:
     inspect_parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
     subcommands.add_parser("debug-info", help="Print a redacted local debug preview")
     subcommands.add_parser("gui", help="Open the capability inspector")
+    subcommands.add_parser("gallery", help="Open the offline-first cached gallery browser")
     plan_parser = subcommands.add_parser("plan-color", help="Plan a color-scheme change")
     plan_parser.add_argument("scheme", help="Installed KDE color-scheme name")
     apply_parser = subcommands.add_parser("apply-color", help="Apply one planned color scheme")
@@ -128,6 +130,54 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Install despite confirmed breakage after reviewing the warning",
     )
+    gallery_validate = subcommands.add_parser(
+        "gallery-validate", help="Validate gallery metadata without executing contributor code"
+    )
+    gallery_validate.add_argument("entries", help="Directory containing gallery entry JSON")
+    gallery_validate.add_argument(
+        "--verify-remote",
+        action="store_true",
+        help="Verify pinned ownership, rice, and screenshot bytes over HTTPS",
+    )
+    gallery_build = subcommands.add_parser(
+        "gallery-build", help="Build a deterministic static gallery snapshot"
+    )
+    gallery_build.add_argument("entries", help="Directory containing gallery entry JSON")
+    gallery_build.add_argument("destination", help="Static gallery.json destination")
+    gallery_build.add_argument("--metrics", help="Trusted aggregate metrics JSON")
+    gallery_build.add_argument(
+        "--check", action="store_true", help="Fail unless destination is already current"
+    )
+    subcommands.add_parser(
+        "gallery-refresh", help="Explicitly fetch and cache the public static gallery snapshot"
+    )
+    gallery_cache = subcommands.add_parser(
+        "gallery-cache", help="Validate and cache a local gallery snapshot"
+    )
+    gallery_cache.add_argument("snapshot", help="Local gallery.json file")
+    gallery_cache.add_argument("--sha256", help="Expected snapshot SHA-256")
+    gallery_list = subcommands.add_parser(
+        "gallery-list", help="Browse entries from the local gallery cache"
+    )
+    gallery_list.add_argument("--query", help="Search names, summaries, authors, and tags")
+    gallery_list.add_argument("--tag", help="Require one gallery tag")
+    gallery_list.add_argument(
+        "--sort",
+        default="updated",
+        choices=("new", "updated", "downloads", "confirmed", "compatible"),
+        help="Deterministic gallery ordering",
+    )
+    gallery_show = subcommands.add_parser(
+        "gallery-show", help="Show one entry from the local gallery cache"
+    )
+    gallery_show.add_argument("entry_id", help="Exact gallery entry id")
+    gallery_report = subcommands.add_parser(
+        "gallery-report", help="Preview a local report and generate a GitHub form URL"
+    )
+    gallery_report.add_argument("entry_id", help="Exact gallery entry id")
+    gallery_report.add_argument("--result", required=True, choices=("success", "failure"))
+    gallery_report.add_argument("--failed-component")
+    gallery_report.add_argument("--error-class")
     return parser
 
 
@@ -138,6 +188,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         from alchemy.ui.main_window import run_gui
 
         return run_gui()
+    if command == "gallery":
+        from alchemy.ui.gallery_window import run_gallery
+
+        return run_gallery()
+
+    if command.startswith("gallery-"):
+        try:
+            return _run_gallery_command(command, arguments)
+        except (RuntimeError, ValueError, OSError) as exc:
+            print(f"Alchemy: {exc}", file=sys.stderr)
+            return 1
 
     if command in {"capture-draft", "capture-export"}:
         try:
@@ -207,6 +268,42 @@ def _run_rice_command(command: str, arguments: argparse.Namespace) -> int:
         )
     else:
         result = service.resolve(arguments.base, arguments.override)
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0
+
+
+def _run_gallery_command(command: str, arguments: argparse.Namespace) -> int:
+    service = GalleryService()
+    if command == "gallery-validate":
+        result = service.validate_directory(
+            arguments.entries, verify_remote=arguments.verify_remote
+        )
+    elif command == "gallery-build":
+        result = service.build(
+            arguments.entries,
+            arguments.destination,
+            metrics_path=arguments.metrics,
+            check=arguments.check,
+        )
+    elif command == "gallery-refresh":
+        result = service.refresh()
+    elif command == "gallery-cache":
+        result = service.cache_local(
+            arguments.snapshot, expected_sha256=arguments.sha256
+        )
+    elif command == "gallery-list":
+        result = service.browse(
+            query=arguments.query, tag=arguments.tag, sort_by=arguments.sort
+        )
+    elif command == "gallery-show":
+        result = service.show(arguments.entry_id)
+    else:
+        result = service.report(
+            arguments.entry_id,
+            result=arguments.result,
+            failed_component=arguments.failed_component,
+            error_class=arguments.error_class,
+        )
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 

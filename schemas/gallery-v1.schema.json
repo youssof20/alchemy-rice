@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/schemas/gallery-v1.schema.json",
+  "title": "Alchemy static gallery snapshot v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "snapshot_version", "source_digest", "entries"],
+  "properties": {
+    "$schema": {"const": "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/schemas/gallery-v1.schema.json"},
+    "snapshot_version": {"const": 1},
+    "source_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "entries": {
+      "type": "array",
+      "maxItems": 5000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["entry", "community", "badges"],
+        "properties": {
+          "entry": {"$ref": "gallery-entry-v1.schema.json"},
+          "community": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["confirmed_reports", "release_downloads", "official_repo_dependencies_only", "known_broken"],
+            "properties": {
+              "confirmed_reports": {"type": "integer", "minimum": 0},
+              "release_downloads": {"type": "integer", "minimum": 0},
+              "official_repo_dependencies_only": {"type": "boolean"},
+              "known_broken": {
+                "type": "array",
+                "maxItems": 64,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["plasma", "reports"],
+                  "properties": {
+                    "plasma": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,2})\\.(0|[1-9][0-9]{0,2})(?:\\.(0|[1-9][0-9]{0,2}))?$"},
+                    "reports": {"type": "integer", "minimum": 1}
+                  }
+                }
+              }
+            }
+          },
+          "badges": {
+            "type": "array",
+            "maxItems": 256,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "label"],
+              "properties": {
+                "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]{0,191}$"},
+                "label": {"type": "string", "minLength": 1, "maxLength": 256}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

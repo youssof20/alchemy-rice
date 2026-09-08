@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/schemas/gallery-entry-v1.schema.json",
+  "title": "Alchemy gallery entry v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "entry_version",
+    "id",
+    "name",
+    "version",
+    "summary",
+    "author",
+    "source",
+    "rice",
+    "compatibility",
+    "components",
+    "dependencies",
+    "licenses",
+    "screenshots",
+    "tags",
+    "published_at",
+    "updated_at"
+  ],
+  "properties": {
+    "$schema": {"const": "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/schemas/gallery-entry-v1.schema.json"},
+    "entry_version": {"const": 1},
+    "id": {"$ref": "#/$defs/id"},
+    "name": {"$ref": "#/$defs/plain128"},
+    "version": {"$ref": "#/$defs/semver"},
+    "summary": {"type": "string", "minLength": 1, "maxLength": 320},
+    "author": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "url"],
+      "properties": {
+        "name": {"$ref": "#/$defs/plain128"},
+        "url": {"$ref": "#/$defs/httpsUrl"}
+      }
+    },
+    "source": {"$ref": "#/$defs/source"},
+    "rice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "sha256"],
+      "properties": {
+        "url": {"$ref": "#/$defs/httpsUrl"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "compatibility": {"$ref": "#/$defs/compatibility"},
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "application_style",
+          "apps",
+          "colors",
+          "cursor",
+          "effects",
+          "fonts",
+          "icons",
+          "kwin",
+          "panels",
+          "plasma_theme",
+          "wallpaper",
+          "window_decoration"
+        ]
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "component_type", "source_type", "license"],
+        "properties": {
+          "id": {"$ref": "#/$defs/id"},
+          "component_type": {"enum": ["asset", "config", "executable"]},
+          "source_type": {"enum": ["distro_package", "github_release", "kde_store", "manual"]},
+          "license": {"$ref": "#/$defs/spdx"}
+        }
+      }
+    },
+    "licenses": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/license"}
+    },
+    "screenshots": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["url", "sha256", "alt", "license"],
+        "properties": {
+          "url": {"$ref": "#/$defs/httpsUrl"},
+          "sha256": {"$ref": "#/$defs/sha256"},
+          "alt": {"type": "string", "minLength": 1, "maxLength": 256},
+          "license": {"$ref": "#/$defs/spdx"}
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {"enum": ["colorful", "dark", "gaming", "laptop", "light", "minimal", "multi-monitor", "productivity", "retro", "tiling", "ultrawide"]}
+    },
+    "published_at": {"$ref": "#/$defs/date"},
+    "updated_at": {"$ref": "#/$defs/date"}
+  },
+  "$defs": {
+    "id": {"type": "string", "minLength": 1, "maxLength": 192, "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/+\\-]*$"},
+    "componentId": {"type": "string", "minLength": 1, "maxLength": 192, "pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]*$"},
+    "plain128": {"type": "string", "minLength": 1, "maxLength": 128},
+    "semver": {"type": "string", "maxLength": 128, "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"},
+    "numericVersion": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,2})\\.(0|[1-9][0-9]{0,2})(?:\\.(0|[1-9][0-9]{0,2}))?$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "spdx": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9.+\\-]*$"},
+    "httpsUrl": {"type": "string", "maxLength": 2048, "pattern": "^https://[^#]+$"},
+    "date": {"type": "string", "format": "date"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repo", "release", "commit"],
+      "properties": {
+        "repo": {"type": "string", "pattern": "^https://(github\\.com|codeberg\\.org)/[^/#]+/[^/#]+$", "maxLength": 2048},
+        "release": {"type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9._+\\-]*$"},
+        "commit": {"$ref": "#/$defs/commit"}
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plasma", "session", "tested"],
+      "properties": {
+        "plasma": {"type": "string", "minLength": 1, "maxLength": 128},
+        "session": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"enum": ["wayland", "x11"]}},
+        "distros": {"type": "array", "minItems": 1, "maxItems": 32, "uniqueItems": true, "items": {"$ref": "#/$defs/componentId"}},
+        "tested": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["distro", "plasma", "session"],
+            "properties": {
+              "distro": {"$ref": "#/$defs/componentId"},
+              "plasma": {"$ref": "#/$defs/numericVersion"},
+              "session": {"enum": ["wayland", "x11"]}
+            }
+          }
+        }
+      }
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "applies_to", "url"],
+      "properties": {
+        "id": {"$ref": "#/$defs/spdx"},
+        "applies_to": {"type": "array", "minItems": 1, "maxItems": 256, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "url": {"$ref": "#/$defs/httpsUrl"}
+      }
+    }
+  }
+}

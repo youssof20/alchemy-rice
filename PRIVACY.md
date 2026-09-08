@@ -10,6 +10,8 @@ Creator capture reads only the reviewed visual settings and the panel driver's p
 
 Dependency resolution reads the rice, local environment facts, bundled compatibility data, and the local package database. It does not search remote package indexes. A confirmed install invokes the selected host package manager and may therefore use repositories configured by the user. Alchemy stores a local receipt containing the rice hash, dependency and package identifiers, installed version, provider, trust tier, and timestamp. It does not upload this information.
 
-Future network access will be tied to a visible user action such as fetching the gallery snapshot, importing a public repository, checking for a release when enabled, or downloading an approved dependency. Screenshots, rice exports, configuration, package lists, and failure reports will not be uploaded automatically.
+`alchemy gallery-refresh` is an explicit network action that fetches one static index and stores its ETag, fetch time, and hash locally. Gallery list, detail, search, sorting, and the Qt browser use only that cache and make no per-card API requests. `gallery-report` prints the complete local report and a prefilled GitHub URL; it does not open the browser or upload the report.
+
+Future network access beyond the gallery snapshot will be tied to a visible user action such as importing a public repository, checking for a release when enabled, or downloading an approved dependency. Screenshots, rice exports, configuration, package lists, and failure reports will not be uploaded automatically.
 
 Debug redaction and capture sanitization are safety aids, not guarantees. Review output before posting it publicly.

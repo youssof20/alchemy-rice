@@ -12,7 +12,7 @@ Target distro testing includes Arch-family systems, Fedora KDE, KDE neon, and Ku
 
 ## Current evidence
 
-Phase 0 through Phase 6 unit tests run on Windows without KDE. No real Plasma integration result has been recorded in this repository yet. The inspector is designed to report unavailable or unknown capabilities rather than claim support without evidence.
+Phase 0 through Phase 7 unit tests run on Windows without KDE. No real Plasma integration result has been recorded in this repository yet. The inspector is designed to report unavailable or unknown capabilities rather than claim support without evidence.
 
 The color-scheme and Phase 2 core drivers are implemented for eligible Plasma 6.6-6.8 sessions. Their plan/apply/verify/rollback behavior is verified against fake KDE, DBus, and Plasma-shell boundaries; real KDE verification is still required. Drivers require `kreadconfig6` and `kwriteconfig6`, with official `plasma-apply-*` utilities required where used.
 
@@ -25,5 +25,10 @@ Rice v2 parsing, canonicalization, hashing, overrides, local import/export, and 
 Creator capture is gated to active Linux KDE sessions in the same Plasma 6.6-6.8 window. Translation and sanitization have fake-boundary coverage, including semantic panel state, but a captured draft has not yet been compared with a real Plasma desktop. Current panel inspection cannot preserve custom panel length in its public view or infer portable intent for panels assigned outside the primary screen, so those cases require creator review or component exclusion.
 
 The Phase 6 provider adapters have fake-boundary coverage only; no real package installation has been recorded. Bundled distro mappings currently cover the Kvantum Qt style capability in official Arch, Fedora, and openSUSE Tumbleweed repositories as checked on 2026-09-08. This confirms the package mapping, not that every Kvantum theme works with every Plasma build. Component and Plasma integration status therefore remain `unknown` until dated real-session evidence is added. Apt and AUR planning are implemented but the bundled database intentionally has no unverified automatic mapping for them.
+
+Phase 7 gallery parsing, deterministic building, trusted metrics, remote integrity checks, ETag cache
+reuse, offline browsing, and local report generation have fake-boundary coverage. The public
+`alchemy-rice-index` repository and a real creator submission have not been published, so no live
+ownership, release-asset, screenshot, scheduled-workflow, or GitHub report-form result is recorded.
 
 When adding an integration result, record the distro, exact Plasma version, session type, test date, and whether the behavior was documented or observed.

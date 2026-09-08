@@ -1,0 +1,87 @@
+name: Gallery safety
+
+on:
+  pull_request:
+    paths:
+      - "gallery/entries/**"
+      - "gallery/metrics.json"
+      - "gallery.json"
+  push:
+    branches: [main]
+    paths:
+      - "gallery/entries/**"
+      - "gallery/metrics.json"
+      - "gallery.json"
+      - "src/alchemy/domain/gallery.py"
+      - "src/alchemy/services/gallery_service.py"
+  schedule:
+    - cron: "23 4 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-pull-request:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      # Validator code always comes from the trusted base revision. The submission
+      # checkout is treated strictly as data and is never installed or executed.
+      - name: Check out trusted validator
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: trusted
+          persist-credentials: false
+      - name: Check out untrusted submission as data
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          path: submission
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Validate metadata and immutable remote bytes
+        env:
+          PYTHONPATH: ${{ github.workspace }}/trusted/src
+        run: >-
+          python -m alchemy.cli.main gallery-validate
+          submission/gallery/entries --verify-remote
+      - name: Refuse contributor-owned aggregate metrics
+        run: cmp trusted/gallery/metrics.json submission/gallery/metrics.json
+      - name: Rebuild static snapshot with the trusted builder
+        env:
+          PYTHONPATH: ${{ github.workspace }}/trusted/src
+        run: >-
+          python -m alchemy.cli.main gallery-build
+          submission/gallery/entries rebuilt-gallery.json
+          --metrics submission/gallery/metrics.json
+      - name: Check submitted snapshot
+        run: cmp rebuilt-gallery.json submission/gallery.json
+
+  validate-trusted-snapshot:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted index
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Validate creator ownership and remote hashes
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: python -m alchemy.cli.main gallery-validate gallery/entries --verify-remote
+      - name: Build and check deterministic snapshot
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: >-
+          python -m alchemy.cli.main gallery-build gallery/entries gallery.json
+          --metrics gallery/metrics.json --check

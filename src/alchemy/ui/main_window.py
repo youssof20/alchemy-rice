@@ -43,7 +43,7 @@ def run_gui() -> int:
     root_layout = QVBoxLayout(root)
     title = QLabel("ALCHEMY / SYSTEM INSPECTOR")
     title.setObjectName("title")
-    subtitle = QLabel("Phase 6 · Inspector with capture and dependency workflows in the CLI")
+    subtitle = QLabel("Phase 7 · Inspector with capture, dependency, and gallery workflows")
     subtitle.setObjectName("muted")
     root_layout.addWidget(title)
     root_layout.addWidget(subtitle)
