@@ -102,7 +102,7 @@ class EnvironmentProbeTests(unittest.TestCase):
         self.assertIn("colorscheme", capabilities.plasma_apply)
         self.assertIn("screenshot", capabilities.portals)
         self.assertTrue(capabilities.apply_supported)
-        self.assertEqual(len(report.settings), 9)
+        self.assertEqual(len(report.settings), 18)
 
     def test_non_linux_probe_is_explicitly_read_only(self) -> None:
         report = EnvironmentProbe(

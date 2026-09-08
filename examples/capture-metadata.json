@@ -1,0 +1,14 @@
+{
+  "id": "github:example/alchemy-rice:captured-workbench",
+  "name": "Captured Workbench",
+  "version": "1.0.0",
+  "author": {
+    "name": "Example author",
+    "url": "https://example.com/alchemy-rice"
+  },
+  "source": {
+    "repo": "https://example.com/alchemy-rice",
+    "release": "v1.0.0",
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  }
+}

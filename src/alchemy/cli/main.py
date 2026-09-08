@@ -6,6 +6,7 @@ import json
 import sys
 from collections.abc import Sequence
 
+from alchemy.services.creator_capture import CreatorCaptureService, capture_component_names
 from alchemy.services.debug_info import build_debug_info
 from alchemy.services.environment_probe import EnvironmentProbe
 from alchemy.services.rice_service import RiceService
@@ -87,6 +88,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     rice_resolve.add_argument("base", help="Canonical base .rice file")
     rice_resolve.add_argument("override", help="Sparse override JSON")
+    capture_draft = subcommands.add_parser(
+        "capture-draft", help="Capture a sanitized, reviewable rice draft"
+    )
+    capture_draft.add_argument("metadata", help="Creator and immutable source metadata JSON")
+    _add_capture_exclusions(capture_draft)
+    capture_export = subcommands.add_parser(
+        "capture-export", help="Capture and export a sanitized canonical rice"
+    )
+    capture_export.add_argument("metadata", help="Creator and immutable source metadata JSON")
+    capture_export.add_argument("destination", help="New .rice output path")
+    _add_capture_exclusions(capture_export)
     return parser
 
 
@@ -97,6 +109,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         from alchemy.ui.main_window import run_gui
 
         return run_gui()
+
+    if command in {"capture-draft", "capture-export"}:
+        try:
+            return asyncio.run(_run_capture_command(command, arguments))
+        except (RuntimeError, ValueError, OSError) as exc:
+            print(f"Alchemy: {exc}", file=sys.stderr)
+            return 1
 
     if command in {"rice-inspect", "rice-export", "rice-import", "rice-resolve"}:
         try:
@@ -154,6 +173,29 @@ def _run_rice_command(command: str, arguments: argparse.Namespace) -> int:
         result = service.resolve(arguments.base, arguments.override)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
+
+
+async def _run_capture_command(command: str, arguments: argparse.Namespace) -> int:
+    service = CreatorCaptureService()
+    excluded = frozenset(arguments.exclude)
+    if command == "capture-draft":
+        result = (await service.draft(arguments.metadata, excluded=excluded)).to_dict()
+    else:
+        result = await service.export(
+            arguments.metadata, arguments.destination, excluded=excluded
+        )
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0
+
+
+def _add_capture_exclusions(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--exclude",
+        action="append",
+        default=[],
+        choices=capture_component_names(),
+        help="Omit one component after reviewing the draft; repeat as needed",
+    )
 
 
 def _run_transaction_command(command: str, arguments: argparse.Namespace) -> int:

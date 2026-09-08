@@ -4,6 +4,17 @@ All notable project changes will be recorded here. The project has not made a pu
 
 ## Unreleased
 
+### Phase 5 — creator capture and sanitizer
+
+- Expanded read-only inspection to all 18 reviewed KConfig settings backed by existing core drivers.
+- Added exact source-to-rice visual allowlists and conservative value conversion.
+- Added portable panel capture from public semantic state without widget configuration values.
+- Added explicit blocking findings for ambiguous screen intent, unavailable custom lengths, and unresolved non-KDE widget provenance.
+- Added recursive publication scanning for local paths, identities, emails, credential patterns, private keys, history fields, and known Wi-Fi names without echoing matches.
+- Added review and export CLI workflows with repeatable component exclusions.
+- Added canonical, no-overwrite capture export and a Markdown component/dependency summary.
+- Added fake-boundary coverage for safe capture, unsupported settings, panel conversion, environment gating, canonical export, and secret redaction.
+
 ### Phase 4 — rice v2
 
 - Added normative JSON Schemas for config-only rice v2 manifests and hash-bound sparse overrides.
