@@ -94,8 +94,10 @@ downloaded snapshot can be imported explicitly:
 alchemy gallery-cache gallery.json --sha256 EXPECTED_HASH
 ```
 
-The production refresh URL points to `alchemy-rice-index`. Until that separate public repository is
-published, local snapshot import is the functional path for this scaffold.
+The current refresh and report URLs use this repository's public scaffold, so both paths work before
+the first community entry exists. They will move to `alchemy-rice-index` when that separate public
+repository is published; cached snapshots remain valid because their format and hashes do not depend
+on the hosting repository.
 
 ## Explicit reports
 

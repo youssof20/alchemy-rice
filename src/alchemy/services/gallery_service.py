@@ -32,10 +32,10 @@ from alchemy.platform.gallery_http import GalleryHttpClient, UrllibGalleryHttpCl
 from alchemy.services.environment_probe import EnvironmentProbe
 
 GALLERY_SNAPSHOT_URL = (
-    "https://raw.githubusercontent.com/youssof20/alchemy-rice-index/main/gallery.json"
+    "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/gallery.json"
 )
 GALLERY_REPORT_URL = (
-    "https://github.com/youssof20/alchemy-rice-index/issues/new"
+    "https://github.com/youssof20/alchemy-rice/issues/new"
 )
 
 

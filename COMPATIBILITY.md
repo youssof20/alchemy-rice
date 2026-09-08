@@ -27,8 +27,9 @@ Creator capture is gated to active Linux KDE sessions in the same Plasma 6.6-6.8
 The Phase 6 provider adapters have fake-boundary coverage only; no real package installation has been recorded. Bundled distro mappings currently cover the Kvantum Qt style capability in official Arch, Fedora, and openSUSE Tumbleweed repositories as checked on 2026-09-08. This confirms the package mapping, not that every Kvantum theme works with every Plasma build. Component and Plasma integration status therefore remain `unknown` until dated real-session evidence is added. Apt and AUR planning are implemented but the bundled database intentionally has no unverified automatic mapping for them.
 
 Phase 7 gallery parsing, deterministic building, trusted metrics, remote integrity checks, ETag cache
-reuse, offline browsing, and local report generation have fake-boundary coverage. The public
-`alchemy-rice-index` repository and a real creator submission have not been published, so no live
-ownership, release-asset, screenshot, scheduled-workflow, or GitHub report-form result is recorded.
+reuse, offline browsing, and local report generation have fake-boundary coverage. The empty index
+scaffold and report form are served from this repository until the separate `alchemy-rice-index`
+repository is published. No real creator submission exists, so no live ownership, release-asset,
+screenshot, scheduled-workflow, or completed report-form result is recorded.
 
 When adding an integration result, record the distro, exact Plasma version, session type, test date, and whether the behavior was documented or observed.
