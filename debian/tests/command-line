@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+alchemy --help >/dev/null
+alchemy app-list | grep -Fx konsole >/dev/null

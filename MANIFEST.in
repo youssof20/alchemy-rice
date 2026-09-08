@@ -1,0 +1,27 @@
+include LICENSE
+include README.md
+include ARCHITECTURE.md
+include APP_ADAPTERS.md
+include CAPTURE_WORKFLOW.md
+include CHANGELOG.md
+include COMPATIBILITY.md
+include CONTRIBUTING.md
+include DEPENDENCY_RESOLUTION.md
+include GALLERY.md
+include PACKAGING.md
+include PANEL_LAYOUT.md
+include PRIVACY.md
+include RELEASE.md
+include REPOSITORY_IMPORT.md
+include RICE_FORMAT.md
+include SECURITY.md
+include SETTING_REFERENCE.md
+include gallery.json
+recursive-include compatibility *.json
+recursive-include debian *
+recursive-include examples *.json
+recursive-include gallery *.json *.md
+recursive-include packaging *
+recursive-include release *.json
+recursive-include schemas *.json
+recursive-include tests *.py

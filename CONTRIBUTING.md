@@ -33,3 +33,12 @@ Gallery entry ownership, release, screenshot, license, and hash requirements are
 bytes from the creator's pinned repository.
 
 KDE APIs and configuration keys change. Link to upstream documentation or source in a pull request when adding a driver, and distinguish documented behavior from an observed workaround.
+
+## Release evidence
+
+Package, VM, hardware, destructive-test, and beta results belong in public issue or CI records
+before their URLs are added to `release/evidence-v1.json`. Do not mark a result passed from a mock,
+unit test, inferred distro version, or unreviewed local run. Never include tester identity or raw
+private logs. `alchemy release-check release/evidence-v1.json --require beta` and `--require launch`
+are the authoritative readiness checks; maintainers review the referenced evidence before any
+publication decision.

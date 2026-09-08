@@ -5,8 +5,10 @@ import asyncio
 import json
 import sys
 from collections.abc import Sequence
+from pathlib import Path
 
 from alchemy.domain.app_adapters import SUPPORTED_APPS
+from alchemy.domain.release import evaluate_release, read_release_evidence
 from alchemy.services.creator_capture import CreatorCaptureService, capture_component_names
 from alchemy.services.debug_info import build_debug_info
 from alchemy.services.dependency_service import DependencyService
@@ -211,6 +213,20 @@ def build_parser() -> argparse.ArgumentParser:
     app_apply.add_argument(
         "--yes", action="store_true", help="Confirm the exact plan-app output"
     )
+    release_check = subcommands.add_parser(
+        "release-check", help="Evaluate recorded beta and launch evidence"
+    )
+    release_check.add_argument("evidence", help="Release evidence v1 JSON")
+    release_check.add_argument(
+        "--repository-root",
+        default=".",
+        help="Repository root containing the required public and package files",
+    )
+    release_check.add_argument(
+        "--require",
+        choices=("beta", "launch"),
+        help="Exit unsuccessfully unless the selected evidence gate passes",
+    )
     return parser
 
 
@@ -225,6 +241,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         from alchemy.ui.gallery_window import run_gallery
 
         return run_gallery()
+
+    if command == "release-check":
+        try:
+            evidence = read_release_evidence(arguments.evidence)
+            result = evaluate_release(evidence, Path(arguments.repository_root))
+            print(json.dumps(result, indent=2, sort_keys=True))
+            if arguments.require == "beta" and not result["beta_ready"]:
+                return 1
+            if arguments.require == "launch" and not result["launch_ready"]:
+                return 1
+            return 0
+        except (RuntimeError, ValueError, OSError) as exc:
+            print(f"Alchemy: {exc}", file=sys.stderr)
+            return 1
 
     if command.startswith("gallery-"):
         try:

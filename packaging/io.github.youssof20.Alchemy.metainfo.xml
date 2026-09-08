@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.youssof20.Alchemy</id>
+  <name>Alchemy</name>
+  <summary>Transactional KDE Plasma 6 ricing workbench</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <description>
+    <p>
+      Alchemy inspects supported KDE Plasma settings, previews reviewed changes, records targeted
+      snapshots and transaction journals, verifies writes, and can restore prior state.
+    </p>
+    <p>
+      Rice manifests contain declarative configuration rather than scripts. Optional executable
+      components are disclosed and handled separately.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.github.youssof20.Alchemy.desktop</launchable>
+  <url type="homepage">https://github.com/youssof20/alchemy-rice</url>
+  <url type="bugtracker">https://github.com/youssof20/alchemy-rice/issues</url>
+  <provides>
+    <binary>alchemy</binary>
+  </provides>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="0.1.0.dev0" date="2026-09-08" type="development" />
+  </releases>
+</component>

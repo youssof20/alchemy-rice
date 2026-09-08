@@ -72,6 +72,11 @@ or shell.
 
 Third-party Plasma widgets, KWin effects, Global Themes, and login themes can contain executable code. Alchemy will not describe them as inert or safe merely because they affect appearance.
 
+Release evidence is untrusted bounded JSON and is validated without fetching its URLs. A recorded
+URL is provenance for human review, not proof by itself. Release tooling is read-only: it cannot
+publish a package, upload a recording, create a release, or post launch material. Package and launch
+decisions remain explicit maintainer actions after the referenced evidence is reviewed.
+
 ## Reporting a vulnerability
 
 Do not include credentials, private configuration, or identifying debug data in a public issue. Until a private reporting channel is published, open a minimal public issue asking the maintainer for a private contact method. Include only the affected version and a non-sensitive summary.

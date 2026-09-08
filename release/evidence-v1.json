@@ -1,0 +1,90 @@
+{
+  "$schema": "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/schemas/release-evidence-v1.schema.json",
+  "format_version": 1,
+  "release": "0.1.0.dev0",
+  "source_commit": "0000000000000000000000000000000000000000",
+  "packages": {
+    "arch": {"status": "pending", "evidence_url": null},
+    "debian": {"status": "pending", "evidence_url": null}
+  },
+  "vm_results": [
+    {
+      "id": "arch-plasma-6.7-wayland",
+      "distro": "arch",
+      "plasma_version": null,
+      "session": "wayland",
+      "scenario": "Arch single-monitor Plasma 6.7 baseline",
+      "status": "pending",
+      "evidence_url": null
+    },
+    {
+      "id": "fedora-kde-current-wayland",
+      "distro": "fedora",
+      "plasma_version": null,
+      "session": "wayland",
+      "scenario": "Current supported Fedora KDE baseline",
+      "status": "pending",
+      "evidence_url": null
+    },
+    {
+      "id": "kde-neon-plm-transition",
+      "distro": "kde-neon",
+      "plasma_version": null,
+      "session": "wayland",
+      "scenario": "KDE neon during the Plasma Login Manager transition",
+      "status": "pending",
+      "evidence_url": null
+    },
+    {
+      "id": "kubuntu-supported-wayland",
+      "distro": "kubuntu",
+      "plasma_version": null,
+      "session": "wayland",
+      "scenario": "Supported Kubuntu release",
+      "status": "pending",
+      "evidence_url": null
+    },
+    {
+      "id": "plasma-6.8-wayland",
+      "distro": "rolling",
+      "plasma_version": null,
+      "session": "wayland",
+      "scenario": "Plasma 6.8 Wayland release candidate or release",
+      "status": "pending",
+      "evidence_url": null
+    },
+    {
+      "id": "hardware-multimonitor-scaling",
+      "distro": "hardware",
+      "plasma_version": null,
+      "session": "wayland",
+      "scenario": "Physical multi-monitor system with mixed scaling",
+      "status": "pending",
+      "evidence_url": null
+    },
+    {
+      "id": "nixos-plasma-manager",
+      "distro": "nixos",
+      "plasma_version": null,
+      "session": "wayland",
+      "scenario": "NixOS with plasma-manager ownership detection",
+      "status": "pending",
+      "evidence_url": null
+    }
+  ],
+  "destructive_tests": [
+    {"id": "kill-gui-mid-apply", "status": "pending", "evidence_url": null},
+    {"id": "kill-worker-mid-apply", "status": "pending", "evidence_url": null},
+    {"id": "forced-verification-failure", "status": "pending", "evidence_url": null},
+    {"id": "unwritable-snapshot-directory", "status": "pending", "evidence_url": null},
+    {"id": "dependency-removed-after-plan", "status": "pending", "evidence_url": null},
+    {"id": "incomplete-journal-recovery", "status": "pending", "evidence_url": null},
+    {"id": "malformed-rice", "status": "pending", "evidence_url": null},
+    {"id": "rice-hash-mismatch", "status": "pending", "evidence_url": null},
+    {"id": "config-symlink", "status": "pending", "evidence_url": null},
+    {"id": "repository-secret-fixtures", "status": "pending", "evidence_url": null}
+  ],
+  "beta_reports": [],
+  "recording": null,
+  "community_rice": null
+}

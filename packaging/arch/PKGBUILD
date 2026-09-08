@@ -1,0 +1,39 @@
+# Maintainer: Alchemy contributors
+pkgname=alchemy-rice-git
+pkgver=0.1.0.dev0.r0.g0000000
+pkgrel=1
+pkgdesc="Transactional KDE Plasma 6 ricing workbench"
+arch=('any')
+url="https://github.com/youssof20/alchemy-rice"
+license=('GPL-3.0-or-later')
+depends=('python>=3.12' 'pyside6>=6.7' 'python-qasync>=0.27' 'plasma-workspace')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-pytest')
+provides=('alchemy-rice')
+conflicts=('alchemy-rice')
+source=('alchemy-rice::git+https://github.com/youssof20/alchemy-rice.git')
+sha256sums=('SKIP')
+
+pkgver() {
+  cd alchemy-rice
+  printf "0.1.0.dev0.r%s.g%s" \
+    "$(git rev-list --count HEAD)" \
+    "$(git rev-parse --short=7 HEAD)"
+}
+
+build() {
+  cd alchemy-rice
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd alchemy-rice
+  PYTHONPATH=src python -m pytest
+}
+
+package() {
+  cd alchemy-rice
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 README.md "$pkgdir/usr/share/doc/alchemy-rice/README.md"
+  install -Dm644 PACKAGING.md "$pkgdir/usr/share/doc/alchemy-rice/PACKAGING.md"
+}

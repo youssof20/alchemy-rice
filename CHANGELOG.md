@@ -4,6 +4,22 @@ All notable project changes will be recorded here. The project has not made a pu
 
 ## Unreleased
 
+### Phase 10 — packaging and evidence-gated beta preparation
+
+- Added PEP 639 metadata, explicit license inclusion, project URLs, desktop entry, AppStream
+  metadata, scalable icon, and complete source-distribution inputs.
+- Added an Arch `alchemy-rice-git` PKGBUILD using the system PEP 517 build and installer tools.
+- Added Debian-family debhelper/pybuild packaging and a command-line autopkgtest.
+- Added a strict release-evidence v1 schema, bounded runtime parser, fixed VM and destructive-test
+  matrices, and independently derived beta and launch readiness.
+- Added release gates for native package smoke tests, public evidence URLs, multi-distro and
+  multi-Plasma external reports, a pinned community rice, and a real hashed apply/revert recording.
+- Added read-only release-check CLI output plus a failing `--require beta|launch` mode for release
+  review and CI.
+- Added a pinned, read-only GitHub quality workflow that lints, type-checks, tests, builds wheel and
+  source distributions, checks metadata, and records hashes without publishing artifacts.
+- Documented that every real-system, package, beta, recording, and launch gate remains pending.
+
 ### Phase 9 — application adapters
 
 - Added versioned visual schemas and strict parsers for Konsole, Kitty, Starship, and fastfetch.

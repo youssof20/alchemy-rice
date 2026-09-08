@@ -72,3 +72,10 @@ silently dropped. Repository extraction reuses the domain parsers but only conve
 fields; it cannot invoke the transactional drivers.
 
 KDE-specific writers must use the highest-level tested interface available: an official `plasma-apply-*` utility, documented DBus/scripting API, a specific KConfig key with its documented refresh behavior, or a narrowly owned structured file parser. Generic code must not overwrite Plasma panel configuration.
+
+Phase 10 adds distribution metadata and a platform-independent release-evidence domain. The evidence
+parser accepts one bounded, strict, versioned document and the evaluator derives separate beta and
+launch readiness without probing or mutating the host. Fixed package, VM, destructive-test,
+external-report, community-rice, and recording gates prevent missing cases from disappearing through
+free-form checklist edits. Packaging and CI can build artifacts, but nothing in the release layer
+publishes packages, posts to a community, or turns pending evidence into a pass.

@@ -43,7 +43,7 @@ def run_gui() -> int:
     root_layout = QVBoxLayout(root)
     title = QLabel("ALCHEMY / SYSTEM INSPECTOR")
     title.setObjectName("title")
-    subtitle = QLabel("Phase 9 · Inspector, repository import, and application adapters")
+    subtitle = QLabel("Phase 10 · Development build · beta evidence pending")
     subtitle.setObjectName("muted")
     root_layout.addWidget(title)
     root_layout.addWidget(subtitle)

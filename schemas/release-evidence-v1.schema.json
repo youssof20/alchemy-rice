@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/schemas/release-evidence-v1.schema.json",
+  "title": "Alchemy release evidence v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "format_version",
+    "release",
+    "source_commit",
+    "packages",
+    "vm_results",
+    "destructive_tests",
+    "beta_reports",
+    "recording",
+    "community_rice"
+  ],
+  "properties": {
+    "$schema": {"const": "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/schemas/release-evidence-v1.schema.json"},
+    "format_version": {"const": 1},
+    "release": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:(?:a|b|rc)[0-9]+|\\.dev[0-9]+)?$"
+    },
+    "source_commit": {"$ref": "#/$defs/commit"},
+    "packages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["arch", "debian"],
+      "properties": {
+        "arch": {"$ref": "#/$defs/statusRecord"},
+        "debian": {"$ref": "#/$defs/statusRecord"}
+      }
+    },
+    "vm_results": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {"$ref": "#/$defs/vmResult"}
+    },
+    "destructive_tests": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {"$ref": "#/$defs/namedStatusRecord"}
+    },
+    "beta_reports": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {"$ref": "#/$defs/betaReport"}
+    },
+    "recording": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/recording"}]
+    },
+    "community_rice": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/communityRice"}]
+    }
+  },
+  "$defs": {
+    "status": {"enum": ["pending", "passed", "failed"]},
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9][a-z0-9.-]{0,63}$"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[^#]+$",
+      "maxLength": 2048
+    },
+    "nullableUrl": {
+      "oneOf": [{"type": "null"}, {"$ref": "#/$defs/url"}]
+    },
+    "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "plasmaVersion": {"type": "string", "pattern": "^6\\.[0-9]+(?:\\.[0-9]+)?$"},
+    "session": {"enum": ["wayland", "x11"]},
+    "statusRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence_url"],
+      "properties": {
+        "status": {"$ref": "#/$defs/status"},
+        "evidence_url": {"$ref": "#/$defs/nullableUrl"}
+      }
+    },
+    "namedStatusRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "evidence_url"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "status": {"$ref": "#/$defs/status"},
+        "evidence_url": {"$ref": "#/$defs/nullableUrl"}
+      }
+    },
+    "vmResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "distro", "plasma_version", "session", "scenario", "status", "evidence_url"],
+      "properties": {
+        "id": {"$ref": "#/$defs/identifier"},
+        "distro": {"$ref": "#/$defs/identifier"},
+        "plasma_version": {
+          "oneOf": [{"type": "null"}, {"$ref": "#/$defs/plasmaVersion"}]
+        },
+        "session": {"$ref": "#/$defs/session"},
+        "scenario": {"type": "string", "minLength": 1, "maxLength": 160},
+        "status": {"$ref": "#/$defs/status"},
+        "evidence_url": {"$ref": "#/$defs/nullableUrl"}
+      }
+    },
+    "betaReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["report_url", "distro", "plasma_version", "session", "outcome"],
+      "properties": {
+        "report_url": {"$ref": "#/$defs/url"},
+        "distro": {"$ref": "#/$defs/identifier"},
+        "plasma_version": {"$ref": "#/$defs/plasmaVersion"},
+        "session": {"$ref": "#/$defs/session"},
+        "outcome": {"enum": ["passed", "resolved", "failed"]}
+      }
+    },
+    "recording": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "url",
+        "sha256",
+        "duration_seconds",
+        "plasma_version",
+        "session",
+        "shows_apply",
+        "shows_verify",
+        "shows_revert",
+        "multiple_applications",
+        "generated_visuals"
+      ],
+      "properties": {
+        "url": {"$ref": "#/$defs/url"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "duration_seconds": {"type": "integer", "minimum": 20, "maximum": 40},
+        "plasma_version": {"$ref": "#/$defs/plasmaVersion"},
+        "session": {"$ref": "#/$defs/session"},
+        "shows_apply": {"type": "boolean"},
+        "shows_verify": {"type": "boolean"},
+        "shows_revert": {"type": "boolean"},
+        "multiple_applications": {"type": "boolean"},
+        "generated_visuals": {"type": "boolean"}
+      }
+    },
+    "communityRice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_url", "commit", "rice_sha256", "apply_report_url", "status"],
+      "properties": {
+        "source_url": {"$ref": "#/$defs/url"},
+        "commit": {"$ref": "#/$defs/commit"},
+        "rice_sha256": {"$ref": "#/$defs/sha256"},
+        "apply_report_url": {"$ref": "#/$defs/url"},
+        "status": {"$ref": "#/$defs/status"}
+      }
+    }
+  }
+}

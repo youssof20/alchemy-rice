@@ -27,4 +27,9 @@ users should treat it as local source data.
 
 Future network access beyond the gallery snapshot and explicit public-repository import will be tied to a visible user action such as checking for a release when enabled or downloading an approved dependency. Screenshots, rice exports, configuration, package lists, and failure reports will not be uploaded automatically.
 
+`alchemy release-check` reads a local release ledger and repository paths without opening or
+fetching evidence URLs. The ledger stores public report links and technical environment labels, not
+tester names or contact details. Maintainers must review logs and recordings for identities, local
+paths, notifications, and credentials before linking them from the public ledger.
+
 Debug redaction and capture sanitization are safety aids, not guarantees. Review output before posting it publicly.

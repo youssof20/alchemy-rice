@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <title>Alchemy</title>
+  <rect width="128" height="128" rx="24" fill="#0d0d0d"/>
+  <path d="M47 24h34v10l-8 12v15l26 39c4 7-1 16-10 16H39c-9 0-14-9-10-16l26-39V46l-8-12z"
+        fill="none" stroke="#e0e0e0" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M40 94h48L73 71H55z" fill="#ff3864"/>
+  <circle cx="58" cy="88" r="5" fill="#0d0d0d"/>
+  <circle cx="73" cy="99" r="4" fill="#0d0d0d"/>
+</svg>

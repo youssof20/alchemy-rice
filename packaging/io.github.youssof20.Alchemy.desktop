@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Alchemy
+GenericName=Plasma ricing workbench
+Comment=Inspect and manage reviewed KDE Plasma appearance settings
+Exec=alchemy gui
+TryExec=alchemy
+Icon=io.github.youssof20.Alchemy
+Terminal=false
+Categories=Qt;KDE;Settings;System;
+Keywords=KDE;Plasma;theme;appearance;rice;
+StartupNotify=true

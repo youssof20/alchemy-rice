@@ -12,7 +12,7 @@ Target distro testing includes Arch-family systems, Fedora KDE, KDE neon, and Ku
 
 ## Current evidence
 
-Phase 0 through Phase 9 unit tests run on Windows without KDE. No real Plasma integration result has been recorded in this repository yet. The inspector is designed to report unavailable or unknown capabilities rather than claim support without evidence.
+Phase 0 through Phase 10 unit tests run on Windows without KDE. No real Plasma integration result has been recorded in this repository yet. The inspector is designed to report unavailable or unknown capabilities rather than claim support without evidence.
 
 The color-scheme and Phase 2 core drivers are implemented for eligible Plasma 6.6-6.8 sessions. Their plan/apply/verify/rollback behavior is verified against fake KDE, DBus, and Plasma-shell boundaries; real KDE verification is still required. Drivers require `kreadconfig6` and `kwriteconfig6`, with official `plasma-apply-*` utilities required where used.
 
@@ -49,5 +49,12 @@ conversion. They have not been run against released Konsole, Kitty, Starship, or
 Verification confirms the persistent owned file, not a running application's rendered appearance.
 Konsole profile discovery, XDG path handling, application reload behavior, and version-specific
 syntax still require dated Linux integration results.
+
+Phase 10 adds development Arch and Debian package definitions, Python distribution metadata, and a
+strict release ledger. A local wheel build is evidence only for the Python artifact; neither native
+package has a recorded target-distro build/install/remove result. All seven VM or hardware entries,
+all destructive system scenarios, external beta reports, the community-rice apply, and the real
+Plasma 6.7 Wayland recording remain pending. Consequently the project is not beta-ready or
+launch-ready.
 
 When adding an integration result, record the distro, exact Plasma version, session type, test date, and whether the behavior was documented or observed.

@@ -1,6 +1,8 @@
 # Alchemy
 
-Alchemy is a free, GPL-licensed KDE Plasma 6 ricing workbench under active development. The current Phase 9 build detects the desktop environment, provides transactional CLI paths for core appearance settings, semantic panel layouts, and reviewed application visuals, safely handles the config-only `.rice` v2 format, creates sanitized rice drafts, resolves separately disclosed dependencies, provides an offline-first community gallery index, and statically converts supported settings from pinned public dotfile repositories.
+Alchemy is a completely free, GPL-licensed KDE Plasma 6 ricing workbench under active development. The current Phase 10 development build targets Plasma 6.6 through 6.8, previews and transactionally applies reviewed appearance, panel, and application settings, and restores targeted snapshots when verification fails. A `.rice` is declarative configuration: Alchemy does not execute scripts or binaries from it.
+
+Source, wheel, Arch VCS, and Debian-family build paths are documented in [PACKAGING.md](PACKAGING.md). No package or beta has been published, no real Plasma integration recording exists yet, and the evidence gate in [RELEASE.md](RELEASE.md) intentionally blocks beta and launch claims until the required multi-distro results are public.
 
 Every apply acquires the shared mutation lock before reading state, creates a targeted snapshot, opens a durable journal, applies through a reviewed KDE interface, verifies the observed setting, and restores the previous state if verification fails. Drivers cover color schemes, icons, cursors, fonts, Plasma themes, wallpaper, application style, window decoration, and selected KWin behavior.
 
@@ -48,6 +50,9 @@ A `.rice` is canonical declarative JSON, not an archive or installer. Alchemy va
 - Sanitized rice draft conversion with conflict omission, unresolved-provenance findings, and a separate unsupported-content report.
 - Versioned, transactional visual adapters for Konsole, Kitty, Starship, and fastfetch with complete-file ownership and mixed-config refusal.
 - Static conversion of the same reviewed application subsets during repository import.
+- PEP 639 Python distribution metadata, desktop integration assets, and checked Arch VCS and Debian-family development packaging paths.
+- A strict release-evidence ledger with separate beta and launch gates for native packages, the VM and destructive matrix, external reports, a community rice, and a real recording.
+- Read-only `release-check` reporting and CI quality/distribution checks that do not publish a release.
 - Unit tests that run without a KDE session.
 
 The inspector reports unknown values instead of inferring KDE support from a version number. Union detection is deliberately unknown until a stable capability probe is available.
@@ -96,6 +101,8 @@ alchemy app-list
 alchemy app-inspect kitty
 alchemy plan-app kitty examples/apps/kitty.json
 alchemy apply-app kitty examples/apps/kitty.json --plan-token TOKEN_FROM_PLAN --yes
+alchemy release-check release/evidence-v1.json
+alchemy release-check release/evidence-v1.json --require beta
 alchemy revert --last
 alchemy recovery --list
 ```
@@ -106,7 +113,7 @@ Run the test suite with:
 pytest
 ```
 
-The repository does not yet provide a distro package or portable release. See [PACKAGING.md](PACKAGING.md) for the current status.
+The repository provides development package definitions but no published distro package or portable release. See [PACKAGING.md](PACKAGING.md) and [RELEASE.md](RELEASE.md) for the current blockers.
 
 ## Safety boundary
 
@@ -128,6 +135,7 @@ The transaction, driver, capture, package-provider, gallery-network, repository-
 - [GALLERY.md](GALLERY.md)
 - [REPOSITORY_IMPORT.md](REPOSITORY_IMPORT.md)
 - [APP_ADAPTERS.md](APP_ADAPTERS.md)
+- [RELEASE.md](RELEASE.md)
 - [COMPATIBILITY.md](COMPATIBILITY.md)
 - [PACKAGING.md](PACKAGING.md)
 - [CHANGELOG.md](CHANGELOG.md)
