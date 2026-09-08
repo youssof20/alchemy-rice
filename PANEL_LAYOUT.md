@@ -1,6 +1,6 @@
 # Panel layouts
 
-Phase 3 accepts a dedicated, strict JSON document for Plasma panels. This is an interim input format, not the planned `.rice` v2 schema.
+Phase 3 introduced a dedicated, strict JSON document for Plasma panels. Rice v2 reuses the same panel declarations inside its `components.panels` object; the standalone file retains `format_version` for direct panel planning.
 
 ```json
 {

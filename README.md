@@ -1,12 +1,12 @@
 # Alchemy
 
-Alchemy is a free, GPL-licensed KDE Plasma 6 ricing workbench under active development. The current Phase 3 build detects the desktop environment and provides transactional CLI paths for core appearance settings and semantic panel layouts.
+Alchemy is a free, GPL-licensed KDE Plasma 6 ricing workbench under active development. The current Phase 4 build detects the desktop environment, provides transactional CLI paths for core appearance settings and semantic panel layouts, and safely handles the config-only `.rice` v2 format.
 
 Every apply acquires the shared mutation lock before reading state, creates a targeted snapshot, opens a durable journal, applies through a reviewed KDE interface, verifies the observed setting, and restores the previous state if verification fails. Drivers cover color schemes, icons, cursors, fonts, Plasma themes, wallpaper, application style, window decoration, and selected KWin behavior.
 
-Target support is Plasma 6.6 and newer, with Wayland as the primary session. Development can happen on Windows, but real KDE integration requires a Linux Plasma session.
+The current engine targets Plasma 6.6 through 6.8, with Wayland as the primary session. Development can happen on Windows, but real KDE integration requires a Linux Plasma session.
 
-A future `.rice` file will be declarative JSON. Alchemy will not execute code contained in a rice. Optional KDE components that contain code will be handled separately as disclosed dependencies with source and trust information.
+A `.rice` is canonical declarative JSON, not an archive or installer. Alchemy validates strict component data, immutable source metadata, external dependency references, compatibility claims, and hostile-input limits without executing content from the file. Optional KDE components that contain code remain separate disclosed dependencies.
 
 ## What works now
 
@@ -25,6 +25,10 @@ A future `.rice` file will be declarative JSON. Alchemy will not execute code co
 - Declarative panel layouts with logical primary/all-screen intent, percentage sizing, and slot-based widget ordering.
 - Preflight validation for every widget, explicit screen-mapping previews, and confirmation tokens that expire when the current layout or display mapping changes.
 - Panel apply and exact captured-layout rollback through Plasma's scripting and serialization interfaces, without replacing the complete applet configuration file.
+- Normative rice v2 and sparse-override JSON schemas with matching semantic validation.
+- Deterministic canonical JSON serialization and SHA-256 verification.
+- Safe rice inspect, export, local import, and base-plus-override resolution without desktop mutation.
+- Compatibility evaluation that preserves unknown evidence and distinguishes warnings from hard failures.
 - Unit tests that run without a KDE session.
 
 The inspector reports unknown values instead of inferring KDE support from a version number. Union detection is deliberately unknown until a stable capability probe is available.
@@ -51,6 +55,10 @@ alchemy plan-setting wallpaper.image /home/me/Pictures/wallpaper.png
 alchemy inspect-panels
 alchemy plan-panels examples/panel-layout.json
 alchemy apply-panels examples/panel-layout.json --plan-token TOKEN_FROM_PLAN --yes
+alchemy rice-export examples/rice-v2-draft.json night-workbench.rice
+alchemy rice-inspect night-workbench.rice
+alchemy rice-resolve night-workbench.rice examples/rice-override.json
+alchemy rice-import night-workbench.rice --sha256 EXPECTED_HASH
 alchemy revert --last
 alchemy recovery --list
 ```

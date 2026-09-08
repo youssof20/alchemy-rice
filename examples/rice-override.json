@@ -1,0 +1,13 @@
+{
+  "override_version": 1,
+  "base": {
+    "id": "github:example/alchemy-rice:night-workbench",
+    "version": "1.0.0",
+    "sha256": "b545f8af557dd716403e8f39135295c41d4646b31e42f4898dd0c2202e41a532"
+  },
+  "components": {
+    "cursor": {
+      "size": 48
+    }
+  }
+}

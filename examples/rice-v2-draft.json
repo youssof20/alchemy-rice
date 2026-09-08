@@ -1,0 +1,87 @@
+{
+  "$schema": "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/schemas/rice-v2.schema.json",
+  "schema_version": 2,
+  "id": "github:example/alchemy-rice:night-workbench",
+  "name": "Night Workbench",
+  "version": "1.0.0",
+  "author": {
+    "name": "Example author",
+    "url": "https://example.com/alchemy-rice"
+  },
+  "source": {
+    "repo": "https://example.com/alchemy-rice",
+    "release": "v1.0.0",
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "compatibility": {
+    "plasma": ">=6.6,<6.9",
+    "session": [
+      "wayland"
+    ],
+    "tested": []
+  },
+  "components": {
+    "colors": {
+      "scheme": "Breeze Dark"
+    },
+    "icons": {
+      "theme": "breeze-dark"
+    },
+    "cursor": {
+      "theme": "Breeze Snow",
+      "size": 36
+    },
+    "plasma_theme": {
+      "theme": "default"
+    },
+    "application_style": {
+      "theme": "Breeze",
+      "style_engine": {
+        "type": "breeze",
+        "min_version": null,
+        "experimental": false
+      }
+    },
+    "panels": {
+      "panels": [
+        {
+          "logical_id": "main-bottom",
+          "location": "bottom",
+          "alignment": "center",
+          "floating": true,
+          "height": {
+            "unit": "screen_percent",
+            "value": 4.0,
+            "min_px": 32,
+            "max_px": 64
+          },
+          "screen_role": "primary",
+          "length_mode": "fill",
+          "hiding": "none",
+          "opacity": "adaptive",
+          "widgets": [
+            {
+              "plugin": "org.kde.plasma.kickoff",
+              "slot": "left"
+            },
+            {
+              "plugin": "org.kde.plasma.icontasks",
+              "slot": "center"
+            },
+            {
+              "plugin": "org.kde.plasma.digitalclock",
+              "slot": "right"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "dependencies": [],
+  "licenses": [],
+  "gallery": {
+    "screenshots": [],
+    "reddit_url": null,
+    "tip_url": null
+  }
+}

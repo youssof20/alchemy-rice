@@ -4,6 +4,17 @@ All notable project changes will be recorded here. The project has not made a pu
 
 ## Unreleased
 
+### Phase 4 — rice v2
+
+- Added normative JSON Schemas for config-only rice v2 manifests and hash-bound sparse overrides.
+- Added duplicate-key rejection and bounded hostile-input parsing.
+- Added deterministic UTF-8 canonical JSON serialization and SHA-256 verification.
+- Added strict semantic validation for metadata, compatibility ranges, components, panels, external dependency references, licenses, and gallery media references.
+- Added base-plus-override resolution limited to component state, with final validation and leaf provenance.
+- Added capability-driven compatibility reports with compatible, warning, incompatible, and unknown states.
+- Added CLI workflows for canonical export, inspection, local integrity-checked import, and override resolution; none apply desktop state.
+- Added format examples and unit coverage for canonicalization, malformed input, impossible ranges, hash mismatch, cache tampering, compatibility, and override binding.
+
 ### Phase 3 — semantic panel engine
 
 - Added strict declarative panel-layout parsing with input caps, semantic dimensions, logical screen roles, and duplicate-edge refusal.

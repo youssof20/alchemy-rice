@@ -1,0 +1,381 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/schemas/rice-v2.schema.json",
+  "title": "Alchemy rice v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_version",
+    "id",
+    "name",
+    "version",
+    "author",
+    "source",
+    "compatibility",
+    "components",
+    "dependencies",
+    "licenses",
+    "gallery"
+  ],
+  "properties": {
+    "$schema": {
+      "const": "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/schemas/rice-v2.schema.json"
+    },
+    "schema_version": {"const": 2},
+    "id": {"$ref": "#/$defs/id"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 128},
+    "version": {"$ref": "#/$defs/semver"},
+    "author": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1, "maxLength": 128},
+        "url": {"$ref": "#/$defs/httpsUrl"}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repo", "release", "commit"],
+      "properties": {
+        "repo": {"$ref": "#/$defs/httpsUrl"},
+        "release": {"type": "string", "minLength": 1, "maxLength": 128},
+        "commit": {"$ref": "#/$defs/commit"}
+      }
+    },
+    "compatibility": {"$ref": "#/$defs/compatibility"},
+    "components": {"$ref": "#/$defs/components"},
+    "dependencies": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/dependency"}
+    },
+    "licenses": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {"$ref": "#/$defs/license"}
+    },
+    "gallery": {"$ref": "#/$defs/gallery"}
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 192,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/+\\-]*$"
+    },
+    "componentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 192,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.\\-]*$"
+    },
+    "semver": {
+      "type": "string",
+      "maxLength": 128,
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"
+    },
+    "numericVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,2})\\.(0|[1-9][0-9]{0,2})(?:\\.(0|[1-9][0-9]{0,2}))?$"
+    },
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "spdx": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9.+\\-]*$"
+    },
+    "httpsUrl": {
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^https://[^#]+$"
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plasma", "session", "tested"],
+      "properties": {
+        "plasma": {"type": "string", "minLength": 1, "maxLength": 128},
+        "session": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {"enum": ["wayland", "x11"]}
+        },
+        "distros": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/componentId"}
+        },
+        "tested": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["distro", "plasma", "session"],
+            "properties": {
+              "distro": {"$ref": "#/$defs/componentId"},
+              "plasma": {"$ref": "#/$defs/numericVersion"},
+              "session": {"enum": ["wayland", "x11"]}
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "colors": {"$ref": "#/$defs/schemeComponent"},
+        "fonts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "general": {"type": "string", "minLength": 1, "maxLength": 512},
+            "fixed": {"type": "string", "minLength": 1, "maxLength": 512},
+            "small": {"type": "string", "minLength": 1, "maxLength": 512},
+            "toolbar": {"type": "string", "minLength": 1, "maxLength": 512},
+            "menu": {"type": "string", "minLength": 1, "maxLength": 512},
+            "window_title": {"type": "string", "minLength": 1, "maxLength": 512}
+          }
+        },
+        "icons": {"$ref": "#/$defs/themeComponent"},
+        "cursor": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "theme": {"type": "string", "minLength": 1, "maxLength": 192},
+            "size": {"type": "integer", "minimum": 0, "maximum": 512}
+          }
+        },
+        "plasma_theme": {"$ref": "#/$defs/themeComponent"},
+        "application_style": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "theme": {"type": "string", "minLength": 1, "maxLength": 192},
+            "style_engine": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["type", "min_version", "experimental"],
+              "properties": {
+                "type": {"enum": ["breeze", "kvantum", "union", "other"]},
+                "min_version": {
+                  "oneOf": [{"$ref": "#/$defs/numericVersion"}, {"type": "null"}]
+                },
+                "experimental": {"type": "boolean"}
+              }
+            }
+          }
+        },
+        "window_decoration": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "plugin": {"$ref": "#/$defs/componentId"},
+            "theme": {"type": "string", "minLength": 1, "maxLength": 192},
+            "border_size": {"type": "string", "minLength": 1, "maxLength": 192},
+            "border_auto": {"type": "boolean"}
+          }
+        },
+        "kwin": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "placement": {"$ref": "#/$defs/componentId"},
+            "borderless_maximized": {"type": "boolean"}
+          }
+        },
+        "panels": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["panels"],
+          "properties": {
+            "panels": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 16,
+              "items": {"$ref": "#/$defs/panel"}
+            }
+          }
+        },
+        "effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {"$ref": "#/$defs/idList"},
+            "disabled": {"$ref": "#/$defs/idList"}
+          }
+        },
+        "wallpaper": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["url", "sha256", "license"],
+          "properties": {
+            "url": {"$ref": "#/$defs/httpsUrl"},
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "license": {"$ref": "#/$defs/spdx"},
+            "fill_mode": {
+              "enum": ["stretch", "preserveAspectFit", "preserveAspectCrop", "pad"]
+            }
+          }
+        },
+        "apps": {"type": "object", "maxProperties": 0}
+      }
+    },
+    "themeComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "theme": {"type": "string", "minLength": 1, "maxLength": 192}
+      }
+    },
+    "schemeComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scheme": {"type": "string", "minLength": 1, "maxLength": 192}
+      }
+    },
+    "idList": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/componentId"}
+    },
+    "dimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit", "value"],
+      "allOf": [
+        {
+          "if": {"properties": {"unit": {"const": "screen_percent"}}},
+          "then": {"properties": {"value": {"maximum": 100}}}
+        }
+      ],
+      "properties": {
+        "unit": {"enum": ["pixels", "screen_percent"]},
+        "value": {"type": "number", "exclusiveMinimum": 0},
+        "min_px": {"type": "integer", "minimum": 1, "maximum": 16384},
+        "max_px": {"type": "integer", "minimum": 1, "maximum": 16384}
+      }
+    },
+    "widget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plugin", "slot"],
+      "properties": {
+        "plugin": {"$ref": "#/$defs/componentId"},
+        "slot": {"enum": ["left", "center", "right"]}
+      }
+    },
+    "panel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["logical_id", "location", "height"],
+      "allOf": [
+        {
+          "if": {
+            "required": ["length_mode"],
+            "properties": {"length_mode": {"const": "custom"}}
+          },
+          "then": {"required": ["length"]},
+          "else": {"not": {"required": ["length"]}}
+        }
+      ],
+      "properties": {
+        "logical_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_\\-]{0,63}$"
+        },
+        "location": {"enum": ["top", "bottom", "left", "right"]},
+        "alignment": {"enum": ["left", "center", "right"]},
+        "floating": {"type": "boolean"},
+        "height": {"$ref": "#/$defs/dimension"},
+        "screen_role": {"enum": ["primary", "all"]},
+        "widgets": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {"$ref": "#/$defs/widget"}
+        },
+        "length_mode": {"enum": ["fill", "fit", "custom"]},
+        "length": {"$ref": "#/$defs/dimension"},
+        "hiding": {"enum": ["none", "autohide", "dodgewindows", "windowsgobelow"]},
+        "opacity": {"enum": ["adaptive", "opaque", "translucent"]}
+      }
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "capability", "component_type", "source", "license"],
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "capability": {"$ref": "#/$defs/componentId"},
+        "component_type": {"enum": ["config", "asset", "executable"]},
+        "license": {"$ref": "#/$defs/spdx"},
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": {"enum": ["distro_package", "kde_store", "github_release", "manual"]},
+            "package": {"$ref": "#/$defs/componentId"},
+            "url": {"$ref": "#/$defs/httpsUrl"},
+            "version": {"type": "string", "minLength": 1, "maxLength": 128},
+            "release": {"type": "string", "minLength": 1, "maxLength": 128},
+            "commit": {"$ref": "#/$defs/commit"},
+            "sha256": {"$ref": "#/$defs/sha256"}
+          }
+        }
+      }
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "applies_to", "url"],
+      "properties": {
+        "id": {"$ref": "#/$defs/spdx"},
+        "applies_to": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/id"}
+        },
+        "url": {"$ref": "#/$defs/httpsUrl"}
+      }
+    },
+    "gallery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["screenshots", "reddit_url", "tip_url"],
+      "properties": {
+        "screenshots": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["url", "sha256", "alt"],
+            "properties": {
+              "url": {"$ref": "#/$defs/httpsUrl"},
+              "sha256": {"$ref": "#/$defs/sha256"},
+              "alt": {"type": "string", "minLength": 1, "maxLength": 256}
+            }
+          }
+        },
+        "reddit_url": {"oneOf": [{"$ref": "#/$defs/httpsUrl"}, {"type": "null"}]},
+        "tip_url": {"oneOf": [{"$ref": "#/$defs/httpsUrl"}, {"type": "null"}]}
+      }
+    }
+  }
+}

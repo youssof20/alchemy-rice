@@ -8,6 +8,7 @@ from collections.abc import Sequence
 
 from alchemy.services.debug_info import build_debug_info
 from alchemy.services.environment_probe import EnvironmentProbe
+from alchemy.services.rice_service import RiceService
 from alchemy.services.transaction_service import TransactionFailedError, TransactionService
 
 
@@ -64,6 +65,28 @@ def build_parser() -> argparse.ArgumentParser:
     recovery = subcommands.add_parser("recovery", help="Inspect or restore incomplete journals")
     recovery.add_argument("--list", action="store_true", help="List incomplete transactions")
     recovery.add_argument("--rollback", metavar="TRANSACTION_ID", help="Restore one transaction")
+    rice_inspect = subcommands.add_parser(
+        "rice-inspect", help="Validate a canonical rice and check this environment"
+    )
+    rice_inspect.add_argument("file", help="Canonical .rice file")
+    rice_inspect.add_argument("--sha256", help="Expected canonical SHA-256")
+    rice_inspect.add_argument("--override", help="Sparse override JSON bound to this rice")
+    rice_export = subcommands.add_parser(
+        "rice-export", help="Validate JSON and export a canonical .rice file"
+    )
+    rice_export.add_argument("source", help="Rice v2 JSON source")
+    rice_export.add_argument("destination", help="New .rice output path")
+    rice_import = subcommands.add_parser(
+        "rice-import", help="Validate and store a canonical rice without applying it"
+    )
+    rice_import.add_argument("file", help="Canonical .rice file")
+    rice_import.add_argument("--sha256", help="Expected canonical SHA-256")
+    rice_import.add_argument("--override", help="Sparse override JSON bound to this rice")
+    rice_resolve = subcommands.add_parser(
+        "rice-resolve", help="Resolve a base rice and bound sparse override"
+    )
+    rice_resolve.add_argument("base", help="Canonical base .rice file")
+    rice_resolve.add_argument("override", help="Sparse override JSON")
     return parser
 
 
@@ -74,6 +97,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         from alchemy.ui.main_window import run_gui
 
         return run_gui()
+
+    if command in {"rice-inspect", "rice-export", "rice-import", "rice-resolve"}:
+        try:
+            return _run_rice_command(command, arguments)
+        except (RuntimeError, ValueError, OSError) as exc:
+            print(f"Alchemy: {exc}", file=sys.stderr)
+            return 1
 
     if command in {
         "plan-color",
@@ -101,6 +131,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(json.dumps(report.to_dict(), indent=2, sort_keys=True))
     else:
         _print_report(report.to_dict())
+    return 0
+
+
+def _run_rice_command(command: str, arguments: argparse.Namespace) -> int:
+    service = RiceService()
+    if command == "rice-inspect":
+        result = service.inspect(
+            arguments.file,
+            expected_sha256=arguments.sha256,
+            override_path=arguments.override,
+        )
+    elif command == "rice-export":
+        result = service.export(arguments.source, arguments.destination)
+    elif command == "rice-import":
+        result = service.import_manifest(
+            arguments.file,
+            expected_sha256=arguments.sha256,
+            override_path=arguments.override,
+        )
+    else:
+        result = service.resolve(arguments.base, arguments.override)
+    print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
 

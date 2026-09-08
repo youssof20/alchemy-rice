@@ -4,13 +4,17 @@ Alchemy modifies desktop configuration, so a setting writer is security-sensitiv
 
 ## Current state
 
-The Phase 3 build permits a reviewed set of core Plasma mutations and semantic panel layouts when conservative capability checks pass. It acquires the shared lock before observing mutable state, snapshots the affected user file, persists the journal state before mutation, applies through a setting-specific KDE interface, verifies the observed state, and rolls back on failure.
+The Phase 4 build permits a reviewed set of core Plasma mutations and semantic panel layouts when conservative capability checks pass. It acquires the shared lock before observing mutable state, snapshots the affected user file, persists the journal state before mutation, applies through a setting-specific KDE interface, verifies the observed state, and rolls back on failure. Rice import and resolution remain non-applying operations.
 
 KConfig values reject control characters and enumerated values are allowlisted where upstream defines a closed set. Commands use argument vectors without a shell. Wallpaper paths must resolve to local regular files; wallpaper apply refuses layouts whose per-desktop state cannot be exactly reconstructed by the official KDE utility.
 
 Panel JSON has strict fields, size/count bounds, identifier validation, and no command or widget-configuration field. Generated scripts embed only canonical JSON data. All requested and generated widgets are checked against Plasma's installed widget types before apply and again inside the apply script. Third-party plasmoids are treated as executable external dependencies and are never embedded or silently replaced.
 
 Captured widget configuration can contain private local values. Transaction journals and snapshot artifacts use owner-only permissions on POSIX systems, and CLI plan, apply, revert, and recovery output excludes captured configuration and raw before/after values.
+
+Rice v2 input is capped before parsing and then checked for duplicate keys, excessive nesting and collections, oversized strings and numbers, unsupported fields, non-HTTPS references, and invalid hashes. Canonical import verifies SHA-256 before storing bytes in an owner-only local directory. Hash-named cache entries are compared before reuse, and export refuses to overwrite an existing file.
+
+Sparse overrides are separate from creator manifests and are bound to the base ID, version, and canonical hash. They can modify only component state, and the complete resolved document is revalidated. Import, export, inspection, and resolution never invoke a setting driver or install a dependency.
 
 ## Invariants
 
