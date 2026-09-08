@@ -4,7 +4,7 @@ Alchemy modifies desktop configuration, so a setting writer is security-sensitiv
 
 ## Current state
 
-The Phase 5 build permits a reviewed set of core Plasma mutations and semantic panel layouts when conservative capability checks pass. It acquires the shared lock before observing mutable state, snapshots the affected user file, persists the journal state before mutation, applies through a setting-specific KDE interface, verifies the observed state, and rolls back on failure. Rice import, resolution, and creator capture remain non-applying operations.
+The Phase 6 build permits a reviewed set of core Plasma mutations and semantic panel layouts when conservative capability checks pass. It acquires the shared lock before observing mutable state, snapshots the affected user file, persists the journal state before mutation, applies through a setting-specific KDE interface, verifies the observed state, and rolls back on failure. Rice import, creator capture, and dependency resolution remain non-applying operations. Dependency installation is a separate explicit operation.
 
 KConfig values reject control characters and enumerated values are allowlisted where upstream defines a closed set. Commands use argument vectors without a shell. Wallpaper paths must resolve to local regular files; wallpaper apply refuses layouts whose per-desktop state cannot be exactly reconstructed by the official KDE utility.
 
@@ -19,6 +19,12 @@ Sparse overrides are separate from creator manifests and are bound to the base I
 Creator capture accepts settings only from exact reviewed KConfig source mappings. Unknown observations are omitted. Panel capture consumes the public semantic view, which contains plugin identifiers but not widget configuration. Ambiguous multi-screen intent, custom panel lengths that cannot be represented exactly, and non-KDE widget provenance block panel export until the creator excludes or replaces that component.
 
 Every generated manifest is structurally validated and scanned before publication. The scanner blocks local and home paths, local usernames and hostnames, email addresses, token-shaped values, OAuth/client-secret fields, private-key markers, recent-file/history fields, and known Wi-Fi names. Findings identify only a category and JSON path; unsafe values and the unsafe manifest are not printed. This is defense in depth, so creators must still review the draft.
+
+Dependency trust comes from reviewed compatibility data, not from a rice's claim. Official distro mappings are Tier A. AUR, community repositories, KDE Store packages, and GitHub releases are never labeled official. Manual sources and mappings without reviewed evidence cannot produce an automatic plan. Immutable and Nix-managed hosts refuse host package mutation.
+
+Install commands are fixed argument vectors, never manifest-provided strings and never shell commands. Privileged Tier A plans use `pkexec` explicitly and explain why privilege is required. The user must provide both `--yes` and a token from the reviewed plan. The service acquires the shared mutation lock, resolves again, rejects any token drift, invokes one provider, and verifies the installed package before recording a receipt. Command output is not echoed in errors. Tier B and Tier C sources remain manual in this phase.
+
+Package installation is intentionally outside the configuration transaction. A rice revert never blindly uninstalls a package because it may predate Alchemy or be shared by other applications. Receipts record what Alchemy installed so a future guided cleanup can make an informed, separate decision.
 
 ## Invariants
 

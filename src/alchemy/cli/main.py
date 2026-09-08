@@ -8,6 +8,7 @@ from collections.abc import Sequence
 
 from alchemy.services.creator_capture import CreatorCaptureService, capture_component_names
 from alchemy.services.debug_info import build_debug_info
+from alchemy.services.dependency_service import DependencyService
 from alchemy.services.environment_probe import EnvironmentProbe
 from alchemy.services.rice_service import RiceService
 from alchemy.services.transaction_service import TransactionFailedError, TransactionService
@@ -15,7 +16,8 @@ from alchemy.services.transaction_service import TransactionFailedError, Transac
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="alchemy", description="Inspect and transactionally change reviewed KDE settings."
+        prog="alchemy",
+        description="Inspect, capture, resolve, and transactionally change reviewed KDE state.",
     )
     subcommands = parser.add_subparsers(dest="command")
 
@@ -99,6 +101,33 @@ def build_parser() -> argparse.ArgumentParser:
     capture_export.add_argument("metadata", help="Creator and immutable source metadata JSON")
     capture_export.add_argument("destination", help="New .rice output path")
     _add_capture_exclusions(capture_export)
+    dependency_resolve = subcommands.add_parser(
+        "dependency-resolve", help="Resolve rice dependencies without installing them"
+    )
+    dependency_resolve.add_argument("file", help="Canonical .rice file")
+    dependency_resolve.add_argument("--sha256", help="Expected canonical SHA-256")
+    dependency_resolve.add_argument(
+        "--allow-known-incompatible",
+        action="store_true",
+        help="Plan despite confirmed breakage after reviewing the warning",
+    )
+    dependency_install = subcommands.add_parser(
+        "dependency-install", help="Install one separately reviewed dependency plan"
+    )
+    dependency_install.add_argument("file", help="Canonical .rice file")
+    dependency_install.add_argument("dependency", help="Exact dependency id")
+    dependency_install.add_argument("--sha256", help="Expected canonical SHA-256")
+    dependency_install.add_argument(
+        "--plan-token", required=True, help="Token from the latest dependency-resolve"
+    )
+    dependency_install.add_argument(
+        "--yes", action="store_true", help="Approve this exact separate package operation"
+    )
+    dependency_install.add_argument(
+        "--allow-known-incompatible",
+        action="store_true",
+        help="Install despite confirmed breakage after reviewing the warning",
+    )
     return parser
 
 
@@ -113,6 +142,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     if command in {"capture-draft", "capture-export"}:
         try:
             return asyncio.run(_run_capture_command(command, arguments))
+        except (RuntimeError, ValueError, OSError) as exc:
+            print(f"Alchemy: {exc}", file=sys.stderr)
+            return 1
+
+    if command in {"dependency-resolve", "dependency-install"}:
+        try:
+            return asyncio.run(_run_dependency_command(command, arguments))
         except (RuntimeError, ValueError, OSError) as exc:
             print(f"Alchemy: {exc}", file=sys.stderr)
             return 1
@@ -196,6 +232,32 @@ def _add_capture_exclusions(parser: argparse.ArgumentParser) -> None:
         choices=capture_component_names(),
         help="Omit one component after reviewing the draft; repeat as needed",
     )
+
+
+async def _run_dependency_command(command: str, arguments: argparse.Namespace) -> int:
+    service = DependencyService()
+    if command == "dependency-resolve":
+        result = (
+            await service.resolve(
+                arguments.file,
+                expected_sha256=arguments.sha256,
+                allow_known_incompatible=arguments.allow_known_incompatible,
+            )
+        ).to_dict()
+    else:
+        if not arguments.yes:
+            raise RuntimeError(
+                "Dependency installation requires --yes after reviewing dependency-resolve"
+            )
+        result = await service.install(
+            arguments.file,
+            arguments.dependency,
+            arguments.plan_token,
+            expected_sha256=arguments.sha256,
+            allow_known_incompatible=arguments.allow_known_incompatible,
+        )
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0
 
 
 def _run_transaction_command(command: str, arguments: argparse.Namespace) -> int:

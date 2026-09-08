@@ -34,4 +34,8 @@ Phase 5 adds a one-way creator capture service. It reads the immutable environme
 
 Capture output passes through the rice v2 validator and a separate recursive publication sanitizer before it can be written. Findings contain JSON paths and categories, never matched values. An unsafe draft withholds both the manifest and generated summary from CLI output. Canonical export is local, refuses overwrite, and does not invoke writers, dependency installers, network clients, or upload paths.
 
+Phase 6 adds a dependency domain and provider boundary. Resolution combines immutable rice declarations, the current capability snapshot, and versioned compatibility data. Trust is derived from reviewed source and repository classification rather than a manifest's wording. Package candidates are queried through fixed provider adapters, and missing tools or evidence remain unresolved.
+
+An install plan is an argument vector with an explicit privilege reason and a token bound to the rice hash, environment, candidate, compatibility status, and command. Installation is a separate command that reacquires the shared mutation lock and recomputes that token before invoking the provider. Only confirmed Tier A mappings are automatable in this phase. A successful provider exit is insufficient: the adapter must observe the package afterward before an owner-only receipt is written. Dependency receipts never instruct config rollback to uninstall a package.
+
 KDE-specific writers must use the highest-level tested interface available: an official `plasma-apply-*` utility, documented DBus/scripting API, a specific KConfig key with its documented refresh behavior, or a narrowly owned structured file parser. Generic code must not overwrite Plasma panel configuration.

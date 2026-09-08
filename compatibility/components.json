@@ -1,0 +1,12 @@
+{
+  "format_version": 1,
+  "entries": [
+    {
+      "capability": "qt.style.kvantum",
+      "plasma": ">=6.6,<6.9",
+      "status": "unknown",
+      "evidence": "Distro package availability is recorded separately; real Plasma integration is not confirmed",
+      "checked_on": "2026-09-08"
+    }
+  ]
+}

@@ -37,6 +37,13 @@ alchemy = "alchemy.cli.main:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.data-files]
+"share/alchemy/compatibility" = [
+  "compatibility/plasma.json",
+  "compatibility/components.json",
+  "compatibility/distro-packages.json",
+]
+
 [tool.pytest.ini_options]
 addopts = "-ra --strict-config --strict-markers"
 testpaths = ["tests"]

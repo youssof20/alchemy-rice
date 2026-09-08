@@ -8,6 +8,8 @@ Imported rice manifests and optional overrides are stored locally by canonical S
 
 Creator capture reads only the reviewed visual settings and the panel driver's public semantic result. It does not capture arbitrary dotfiles, recent files, application state, or widget configuration. Draft and export commands are local-only and do not take screenshots, query Wi-Fi networks, contact repositories, or upload output. If a caller explicitly supplies known Wi-Fi names to the sanitizer, matching strings are blocked.
 
+Dependency resolution reads the rice, local environment facts, bundled compatibility data, and the local package database. It does not search remote package indexes. A confirmed install invokes the selected host package manager and may therefore use repositories configured by the user. Alchemy stores a local receipt containing the rice hash, dependency and package identifiers, installed version, provider, trust tier, and timestamp. It does not upload this information.
+
 Future network access will be tied to a visible user action such as fetching the gallery snapshot, importing a public repository, checking for a release when enabled, or downloading an approved dependency. Screenshots, rice exports, configuration, package lists, and failure reports will not be uploaded automatically.
 
 Debug redaction and capture sanitization are safety aids, not guarantees. Review output before posting it publicly.

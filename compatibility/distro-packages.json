@@ -1,0 +1,35 @@
+{
+  "format_version": 1,
+  "entries": [
+    {
+      "capability": "qt.style.kvantum",
+      "distro": "arch",
+      "provider": "pacman",
+      "package": "kvantum",
+      "repository": "official",
+      "source_url": "https://archlinux.org/packages/extra/x86_64/kvantum/",
+      "status": "confirmed_working",
+      "checked_on": "2026-09-08"
+    },
+    {
+      "capability": "qt.style.kvantum",
+      "distro": "fedora",
+      "provider": "dnf",
+      "package": "kvantum",
+      "repository": "official",
+      "source_url": "https://packages.fedoraproject.org/pkgs/kvantum/kvantum/",
+      "status": "confirmed_working",
+      "checked_on": "2026-09-08"
+    },
+    {
+      "capability": "qt.style.kvantum",
+      "distro": "opensuse-tumbleweed",
+      "provider": "zypper",
+      "package": "kvantum-qt6",
+      "repository": "official",
+      "source_url": "https://software.opensuse.org/package/kvantum-qt6",
+      "status": "confirmed_working",
+      "checked_on": "2026-09-08"
+    }
+  ]
+}

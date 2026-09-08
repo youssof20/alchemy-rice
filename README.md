@@ -1,6 +1,6 @@
 # Alchemy
 
-Alchemy is a free, GPL-licensed KDE Plasma 6 ricing workbench under active development. The current Phase 5 build detects the desktop environment, provides transactional CLI paths for core appearance settings and semantic panel layouts, safely handles the config-only `.rice` v2 format, and creates sanitized rice drafts from the current desktop.
+Alchemy is a free, GPL-licensed KDE Plasma 6 ricing workbench under active development. The current Phase 6 build detects the desktop environment, provides transactional CLI paths for core appearance settings and semantic panel layouts, safely handles the config-only `.rice` v2 format, creates sanitized rice drafts, and resolves separately disclosed dependencies through an explicit trust model.
 
 Every apply acquires the shared mutation lock before reading state, creates a targeted snapshot, opens a durable journal, applies through a reviewed KDE interface, verifies the observed setting, and restores the previous state if verification fails. Drivers cover color schemes, icons, cursors, fonts, Plasma themes, wallpaper, application style, window decoration, and selected KWin behavior.
 
@@ -33,6 +33,10 @@ A `.rice` is canonical declarative JSON, not an archive or installer. Alchemy va
 - Reviewable capture drafts with component exclusions, portable panel conversion, and unresolved-component findings.
 - Blocking publication scans for local paths, usernames, hostnames, email addresses, credential patterns, private-key markers, history keys, and known Wi-Fi names.
 - Canonical capture export plus a human-readable component, compatibility, dependency, and limitation summary.
+- Tier A/B/C dependency classification with exact source, package, version, privilege, and command review data.
+- Read-only dependency checks and provider-specific plans for pacman, AUR helpers, dnf, apt, and zypper.
+- Separate, token-bound installation of reviewed official packages with post-install verification and local receipts.
+- Versioned compatibility data that distinguishes confirmed, broken, unknown, unsupported, and user-report evidence.
 - Unit tests that run without a KDE session.
 
 The inspector reports unknown values instead of inferring KDE support from a version number. Union detection is deliberately unknown until a stable capability probe is available.
@@ -66,6 +70,9 @@ alchemy rice-import night-workbench.rice --sha256 EXPECTED_HASH
 alchemy capture-draft examples/capture-metadata.json
 alchemy capture-draft examples/capture-metadata.json --exclude panels
 alchemy capture-export examples/capture-metadata.json captured-workbench.rice
+alchemy rice-export examples/rice-v2-dependencies.json kvantum-workbench.rice
+alchemy dependency-resolve kvantum-workbench.rice
+alchemy dependency-install kvantum-workbench.rice kvantum-style-engine --plan-token TOKEN --yes
 alchemy revert --last
 alchemy recovery --list
 ```
@@ -82,7 +89,7 @@ The repository does not yet provide a distro package or portable release. See [P
 
 Writers are unavailable unless the host is Linux, an active KDE session reports a version in the current 6.6-6.8 target window, plasma-manager is not detected as the state owner, and each driver's required KDE tools exist. External commands are invoked as argument vectors without a shell. Debug output is generated locally and redacted before display; Alchemy does not upload it.
 
-The transaction, driver, and capture behavior has fake-boundary unit coverage but has not yet been validated in a real Plasma VM. Current limitations and test evidence are recorded in [COMPATIBILITY.md](COMPATIBILITY.md). Setting names and accepted values are documented in [SETTING_REFERENCE.md](SETTING_REFERENCE.md); panel layout fields are documented in [PANEL_LAYOUT.md](PANEL_LAYOUT.md), and creator review is documented in [CAPTURE_WORKFLOW.md](CAPTURE_WORKFLOW.md).
+The transaction, driver, capture, and package-provider behavior has fake-boundary unit coverage but has not yet been validated in a real Plasma VM. Current limitations and test evidence are recorded in [COMPATIBILITY.md](COMPATIBILITY.md). Setting names and accepted values are documented in [SETTING_REFERENCE.md](SETTING_REFERENCE.md); panel layout fields are documented in [PANEL_LAYOUT.md](PANEL_LAYOUT.md), creator review in [CAPTURE_WORKFLOW.md](CAPTURE_WORKFLOW.md), and dependency trust and installation in [DEPENDENCY_RESOLUTION.md](DEPENDENCY_RESOLUTION.md).
 
 ## Project documents
 
@@ -94,6 +101,7 @@ The transaction, driver, and capture behavior has fake-boundary unit coverage bu
 - [SETTING_REFERENCE.md](SETTING_REFERENCE.md)
 - [PANEL_LAYOUT.md](PANEL_LAYOUT.md)
 - [CAPTURE_WORKFLOW.md](CAPTURE_WORKFLOW.md)
+- [DEPENDENCY_RESOLUTION.md](DEPENDENCY_RESOLUTION.md)
 - [COMPATIBILITY.md](COMPATIBILITY.md)
 - [PACKAGING.md](PACKAGING.md)
 - [CHANGELOG.md](CHANGELOG.md)

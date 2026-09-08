@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/youssof20/alchemy-rice/main/schemas/rice-v2.schema.json",
+  "schema_version": 2,
+  "id": "github:example/alchemy-rice:kvantum-workbench",
+  "name": "Kvantum Workbench",
+  "version": "1.0.0",
+  "author": {
+    "name": "Example author",
+    "url": "https://example.com/alchemy-rice"
+  },
+  "source": {
+    "repo": "https://example.com/alchemy-rice",
+    "release": "v1.0.0",
+    "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "compatibility": {
+    "plasma": ">=6.6,<6.9",
+    "session": [
+      "wayland"
+    ],
+    "tested": []
+  },
+  "components": {
+    "application_style": {
+      "theme": "kvantum",
+      "style_engine": {
+        "type": "kvantum",
+        "min_version": null,
+        "experimental": false
+      }
+    }
+  },
+  "dependencies": [
+    {
+      "id": "kvantum-style-engine",
+      "capability": "qt.style.kvantum",
+      "component_type": "executable",
+      "source": {
+        "type": "distro_package",
+        "package": "kvantum"
+      },
+      "license": "GPL-3.0-or-later"
+    }
+  ],
+  "licenses": [],
+  "gallery": {
+    "screenshots": [],
+    "reddit_url": null,
+    "tip_url": null
+  }
+}

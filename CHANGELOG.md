@@ -4,6 +4,18 @@ All notable project changes will be recorded here. The project has not made a pu
 
 ## Unreleased
 
+### Phase 6 — dependency resolver
+
+- Added explicit Tier A distribution, Tier B community, and Tier C manual trust classifications and user-facing labels.
+- Added strict, versioned Plasma, component, and distro-package compatibility databases with dated evidence states.
+- Added provider adapters and exact command planning for pacman, paru/yay, dnf, apt, and zypper.
+- Added read-only installed-package inspection and declared-version checks.
+- Added immutable/Nix host refusal, missing-provider results, manual-source handling, and explicit known-incompatibility overrides.
+- Added review tokens bound to the rice hash, environment, compatibility result, package candidate, and command.
+- Added a separate confirmed Tier A install command using `pkexec`, followed by provider verification and an owner-only local receipt.
+- Kept Tier B/AUR operations visible but manual and prohibited package auto-uninstall during rice rollback.
+- Added fake-boundary coverage for trust classification, provider plans, stale-token refusal, immutable hosts, manual sources, known breakage, verified installation, and receipts.
+
 ### Phase 5 — creator capture and sanitizer
 
 - Expanded read-only inspection to all 18 reviewed KConfig settings backed by existing core drivers.

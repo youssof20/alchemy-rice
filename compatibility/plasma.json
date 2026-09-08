@@ -1,0 +1,11 @@
+{
+  "format_version": 1,
+  "entries": [
+    {
+      "plasma": ">=6.6,<6.9",
+      "status": "unknown",
+      "evidence": "Alchemy implementation target; real-session integration evidence is still pending",
+      "checked_on": "2026-09-08"
+    }
+  ]
+}
