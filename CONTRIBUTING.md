@@ -1,0 +1,29 @@
+# Contributing
+
+Alchemy is early in development. Changes should be small enough to review and should preserve the distinction between domain logic and KDE mutation.
+
+## Development setup
+
+Use Python 3.12 or newer:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
+pytest
+ruff check .
+mypy src
+```
+
+Core logic and tests must run without a KDE session. KDE-specific behavior requires a real Plasma 6 test environment; do not add production behavior that fakes a successful KDE operation on another platform.
+
+## Change requirements
+
+- Use type hints in engine code.
+- Pass external command arguments as a sequence; never construct a shell command string.
+- Keep rice data declarative. Do not add command or executable payload fields.
+- Add tests for parsing, planning, mutation, verification, and rollback behavior as applicable.
+- Document the exact Plasma version, session, and distro used for integration tests.
+- Do not commit personal configuration, generated prompts, planning notes, secrets, or private paths.
+
+KDE APIs and configuration keys change. Link to upstream documentation or source in a pull request when adding a driver, and distinguish documented behavior from an observed workaround.

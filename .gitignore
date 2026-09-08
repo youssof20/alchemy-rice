@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.coverage
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+build/
+dist/
+
+# Internal planning and agent-control material is never published.
+CONTEXT*.md
+*PROMPT*.md
+build-phase.md
+*SCRATCH*.md
+*NOTES_PRIVATE*.md
+*INTERNAL*.md
+chat-export*
+research-dump*
