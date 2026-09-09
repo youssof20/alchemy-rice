@@ -6,6 +6,7 @@ import unittest
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 from alchemy.domain.capabilities import EnvironmentReport
 from alchemy.domain.compatibility_database import (
@@ -17,6 +18,7 @@ from alchemy.domain.compatibility_database import (
 from alchemy.domain.dependencies import TrustTier, classify_trust
 from alchemy.domain.rice import canonical_json_bytes
 from alchemy.platform.commands import CommandResult
+from alchemy.platform.packages import PackageProviderFactory
 from alchemy.services.dependency_service import DependencyService
 from tests.unit.test_rice_domain import capability, manifest_data
 
@@ -91,6 +93,10 @@ def _rice(dependency_source: dict[str, Any] | None = None) -> dict[str, Any]:
     return payload
 
 
+def _trust_test_executable(factory: PackageProviderFactory, name: str) -> str | None:
+    return factory.which(name)
+
+
 class DependencyServiceTests(unittest.IsolatedAsyncioTestCase):
     def test_trust_classification_never_calls_aur_official(self) -> None:
         self.assertEqual(
@@ -109,7 +115,10 @@ class DependencyServiceTests(unittest.IsolatedAsyncioTestCase):
             "pacman": "/usr/bin/pacman",
             "pkexec": "/usr/bin/pkexec",
         }
-        with tempfile.TemporaryDirectory() as temporary:
+        with (
+            patch.object(PackageProviderFactory, "_trusted", _trust_test_executable),
+            tempfile.TemporaryDirectory() as temporary,
+        ):
             root = Path(temporary)
             rice = root / "test.rice"
             rice.write_bytes(canonical_json_bytes(_rice()))
@@ -203,7 +212,10 @@ class DependencyServiceTests(unittest.IsolatedAsyncioTestCase):
             "pacman": "/usr/bin/pacman",
             "pkexec": "/usr/bin/pkexec",
         }
-        with tempfile.TemporaryDirectory() as temporary:
+        with (
+            patch.object(PackageProviderFactory, "_trusted", _trust_test_executable),
+            tempfile.TemporaryDirectory() as temporary,
+        ):
             rice = Path(temporary) / "test.rice"
             rice.write_bytes(canonical_json_bytes(_rice()))
             service = DependencyService(
@@ -229,7 +241,10 @@ class DependencyServiceTests(unittest.IsolatedAsyncioTestCase):
             "pkexec": "/usr/bin/pkexec",
         }
         source = {"type": "distro_package", "package": "kvantum", "version": "1.1.8"}
-        with tempfile.TemporaryDirectory() as temporary:
+        with (
+            patch.object(PackageProviderFactory, "_trusted", _trust_test_executable),
+            tempfile.TemporaryDirectory() as temporary,
+        ):
             root = Path(temporary)
             rice = root / "test.rice"
             rice.write_bytes(canonical_json_bytes(_rice(source)))
