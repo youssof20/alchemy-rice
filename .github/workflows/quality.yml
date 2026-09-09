@@ -28,7 +28,20 @@ jobs:
       - name: Type check
         run: python -m mypy src
       - name: Unit tests
-        run: python -m pytest
+        shell: bash
+        run: |
+          set +e
+          python -m pytest -q 2>&1 | tee pytest-output.txt
+          test_status=${PIPESTATUS[0]}
+          set -e
+          if (( test_status != 0 )); then
+            output="$(tail -c 6000 pytest-output.txt)"
+            output="${output//'%'/'%25'}"
+            output="${output//$'\r'/'%0D'}"
+            output="${output//$'\n'/'%0A'}"
+            echo "::error title=Unit tests failed::${output}"
+            exit "$test_status"
+          fi
       - name: Validate pending release ledger
         run: python -m alchemy.cli.main release-check release/evidence-v1.json
       - name: Build wheel and source distribution
