@@ -4,11 +4,16 @@ All notable project changes will be recorded here. The project has not made a pu
 
 ## Unreleased
 
-## 0.1.0a1 - 2026-09-09
+## 0.1.0a2 - 2026-09-09
 
 - Published the first test-only Python wheel and source archive.
 - Reworked the README around exact distro prerequisites, a short install path, a safe first
   transaction, supported Plasma versions, and clearly separated feature and limitation lists.
+- Kept strict type checking compatible with the mypy 1.x range used by clean Linux builds.
+
+## 0.1.0a1 - 2026-09-09
+
+- Tagged for an initial release attempt, but CI stopped before artifacts were published.
 
 ### Phase 10 — packaging and evidence-gated beta preparation
 

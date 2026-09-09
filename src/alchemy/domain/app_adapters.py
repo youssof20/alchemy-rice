@@ -835,7 +835,7 @@ def _number(value: Any, context: str, minimum: float, maximum: float) -> float:
 def _integer(value: Any, context: str, minimum: int, maximum: int) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or not minimum <= value <= maximum:
         raise ValueError(f"{context} must be an integer from {minimum} through {maximum}")
-    return value
+    return int(value)
 
 
 def _boolean(value: Any, context: str) -> bool:

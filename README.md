@@ -77,7 +77,7 @@ Then install the same release wheel on any of those systems:
 ```bash
 "$HOME/.local/share/alchemy-test/bin/python" -m pip install --upgrade pip
 "$HOME/.local/share/alchemy-test/bin/python" -m pip install \
-  https://github.com/youssof20/alchemy-rice/releases/download/v0.1.0a1/alchemy_rice-0.1.0a1-py3-none-any.whl
+  https://github.com/youssof20/alchemy-rice/releases/download/v0.1.0a2/alchemy_rice-0.1.0a2-py3-none-any.whl
 ```
 
 ## Run it

@@ -1,6 +1,6 @@
 # Packaging
 
-The `v0.1.0a1` GitHub prerelease is a test build, not a distro package or public beta. Its universal
+The `v0.1.0a2` GitHub prerelease is a test build, not a distro package or public beta. Its universal
 Python wheel is the simplest current install path. The repository also contains development
 packaging for an Arch VCS package and a Debian-family native package. Native package paths still
 require the real distro results tracked in [RELEASE.md](RELEASE.md).
@@ -47,7 +47,7 @@ checkout with the listed build dependencies installed:
 
 ```bash
 dpkg-buildpackage --build=binary --unsigned-changes --unsigned-source
-sudo apt install ../alchemy-rice_0.1.0~a1_all.deb
+sudo apt install ../alchemy-rice_0.1.0~a2_all.deb
 ```
 
 The result is not claimed compatible with Kubuntu or KDE neon until their matrix runs pass. Distro

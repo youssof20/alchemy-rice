@@ -427,7 +427,7 @@ def _required_integer(value: dict[str, Any], key: str) -> int:
 def _integer(value: Any, key: str) -> int:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise RuntimeError(f"Plasma panel field {key} is invalid")
-    return round(value)
+    return round(float(value))
 
 
 def _required_boolean(value: dict[str, Any], key: str) -> bool:
