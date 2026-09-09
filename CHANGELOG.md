@@ -4,6 +4,12 @@ All notable project changes will be recorded here. The project has not made a pu
 
 ## Unreleased
 
+## 0.1.0a1 - 2026-09-09
+
+- Published the first test-only Python wheel and source archive.
+- Reworked the README around exact distro prerequisites, a short install path, a safe first
+  transaction, supported Plasma versions, and clearly separated feature and limitation lists.
+
 ### Phase 10 — packaging and evidence-gated beta preparation
 
 - Added PEP 639 metadata, explicit license inclusion, project URLs, desktop entry, AppStream

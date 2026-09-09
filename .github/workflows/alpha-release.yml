@@ -1,0 +1,51 @@
+name: Alpha release
+
+on:
+  push:
+    tags:
+      - "v*a*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install project and release tools
+        run: python -m pip install --disable-pip-version-check -e '.[dev]'
+      - name: Verify tag and release notes
+        shell: bash
+        run: |
+          package_version="$(python -c 'from alchemy import __version__; print(__version__)')"
+          test "$GITHUB_REF_NAME" = "v${package_version}"
+          test -f "release/notes/${GITHUB_REF_NAME}.md"
+      - name: Run quality checks
+        run: |
+          python -m ruff check .
+          python -m mypy src
+          python -m pytest
+      - name: Build distributions
+        run: |
+          python -m build
+          python -m twine check dist/*
+      - name: Write SHA-256 checksums
+        working-directory: dist
+        run: sha256sum * > SHA256SUMS
+      - name: Publish GitHub prerelease
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --prerelease \
+            --verify-tag \
+            --title "Alchemy ${GITHUB_REF_NAME#v} test build" \
+            --notes-file "release/notes/${GITHUB_REF_NAME}.md"

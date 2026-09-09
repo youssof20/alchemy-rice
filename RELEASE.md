@@ -1,7 +1,7 @@
 # Release evidence and gates
 
-Alchemy is not beta-ready and has not been publicly released. Packaging files are development
-paths, not evidence that a distro install has succeeded. No real Plasma apply/revert recording or
+Alchemy is not beta-ready. `v0.1.0a1` is an explicitly experimental prerelease for maintainer-led
+testing, not evidence that a distro install has succeeded. No real Plasma apply/revert recording or
 external beta report is currently claimed.
 
 The versioned evidence document at `release/evidence-v1.json` is the single release ledger. Check it
